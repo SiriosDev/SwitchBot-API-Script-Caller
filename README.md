@@ -20,7 +20,7 @@ For more info click [here][switchbot-api-repo]
 
 ## Installation
 1. Simply clone this repo and copy the pyscript folder in your home assisant config folder 
-2. Include (or copy) [`pyscript/config.yaml`](./pyscript/config.yaml) in configuration.yaml under -> `pyscript:`
+2. Include (or copy) [`pyscript/config.yaml`](./pyscript/config.yaml) in `configuration.yaml` under -> `pyscript:`
 3. In [`pyscript/config.yaml`](./pyscript/config.yaml), set and search the following parameters (secret suggested):
     - Token (`token:`) from `Developer Option` in the SwitchBot App
     - Secret Key (`secret:`) from `Developer Option` in the SwitchBot App
