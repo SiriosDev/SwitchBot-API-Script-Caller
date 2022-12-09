@@ -1,12 +1,17 @@
-# SwitchBot API Script Caller
 
 [![License][licensing-shield]](LICENSE)
-
-
+# SwitchBot API Script Caller
 
 SwitchBot API (Ver. 1.1) Script Caller, using pyscript for the scripting.
 
 For more info click [here][switchbot-api-repo]
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [How To Use](#how-to-use)
+    - [HVAC](#switchbot-hvac-api-interface)
+    - [Generic Command](#switchbot-generic-command-api-interface)
+- [Work in Progress](#work-in-progress)
 
 
 ## Requirements
@@ -43,7 +48,7 @@ Parameters:
 - commandType
 
 
-#### Work in Progress
+## Work in Progress
 The script worksfine, but everything is still WIP, including this file.
 For now I apologize to [OpenWonderLabs](https://github.com/OpenWonderLabs),
 as soon as possible I will include all references due to the Repository.
