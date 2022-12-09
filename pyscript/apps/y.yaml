@@ -1,0 +1,65 @@
+#This file is useless, I use it for convenience in writing yaml descriptions for home assistant services
+name: SwitchBot HVAC API Interface
+description: This (py)script allows you to control HVAC "saved" in "Switchbot Mini Hub" (or other switchbot brand ir blasters !! not yet tested !!).
+fields:
+  deviceId:
+    name: Device ID
+    description: HVAC Target device id (get req. to api)
+    example: 00-000000000000-00000000
+    default:
+    required: true
+    selector:
+      text:
+
+  temperature:
+    name: Temperature
+    description: HVAC Target Temperature in Celsius (min 16 - Max 30)
+    example: 26
+    default:
+    required: true
+    selector:
+      number:
+        min: 16
+        max: 30
+        step: 0.5
+        unit_of_measurement: "°C"
+        mode: box
+
+  mode:
+    name: Mode
+    description: HVAC Mode Selector 1 (auto), 2 (cool), 3 (dry), 4 (fan), 5 (heat)
+    example: 1
+    default:
+    required: true
+    selector:
+      number:
+        min: 1
+        max: 5
+        step: 1
+        mode: box
+
+  fan_speed:
+    name: Fan Speed
+    description: HVAC Fan Speed Selector 1 (auto), 2 (low), 3 (medium), 4 (high)
+    example: 1
+    default:
+    required: true
+    selector:
+      number:
+        min: 1
+        max: 4
+        step: 1
+        mode: box
+
+  state:
+    name: Power State
+    description: HVAC Power State
+    example: off
+    default:
+    required: true
+    selector:
+      select:
+        options:
+          - on
+          - off
+        mode: list
