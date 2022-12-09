@@ -64,6 +64,7 @@ All rights to the [API][switchbot-api-repo] belong to [OpenWonderLabs][OpenWonde
 For any problems open an Issue, (soon I will insert a template for that).
 
 
+
 [licensing-shield]: https://img.shields.io/github/license/SiriosDev/SwitchBot-API-Script-Caller?style=flat-square
 [switchbot-api-repo]: https://github.com/OpenWonderLabs/SwitchBotAPI
 [OpenWonderLabs-lnk]: https://github.com/OpenWonderLabs
