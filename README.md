@@ -27,11 +27,9 @@ This scrypt creates two services in home assisant:
 - [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)]()
 - [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)]()
 
-###
-SwitchBot HVAC API Interface
+### SwitchBot HVAC API Interface
 
-###
-SwitchBot Generic Command API Interface
+### SwitchBot Generic Command API Interface
 
 
 
