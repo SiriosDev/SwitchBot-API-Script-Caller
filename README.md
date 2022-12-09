@@ -24,14 +24,30 @@ For more info click [here][switchbot-api-repo]
 ## How To Use
 This scrypt creates two services in home assisant:
 
-- [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)]()
-- [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)]()
+- [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
+- [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
 
 ### SwitchBot HVAC API Interface
+Parameters:
+- deviceId
+- temperature
+- mode
+- fan_speed
+- state
 
 ### SwitchBot Generic Command API Interface
+Parameters:
+- deviceId
+- command
+- parameter
+- commandType
 
 
+#### Work in Progress
+The script worksfine, but everything is still WIP, including this file.
+For now I apologize to [OpenWonderLabs](https://github.com/OpenWonderLabs),
+as soon as possible I will include all references due to the Repository.
+For any problems open an Issue, (soon I will insert a template for convenience)
 
 
 [licensing-shield]:https://img.shields.io/github/license/SiriosDev/SwitchBot-API-Script-Caller?style=flat-square
