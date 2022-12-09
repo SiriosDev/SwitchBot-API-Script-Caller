@@ -48,7 +48,7 @@ fields:
       number:
         min: 16
         max: 30
-        step: 0.5
+        step: 1
         unit_of_measurement: "°C"
         mode: box
 
