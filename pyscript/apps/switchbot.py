@@ -25,13 +25,13 @@ def requestHelper(_url,_json,_headers):
 @pyscript_executor
 def requestGetHelper(_url,_json,_headers):
     return requests.get(_url,json = _json, headers=_headers)
-    
+
 #services
 @service
 def switchbot_list_devices():
     """yaml
 name: SwitchBot list devices
-description: This pyscript list devices register in the "Switchbot Mini Hub". The result is printed in the `home-assistant.log` file (avail. in homeassistant main config folder)
+description: This pyscript list registered devices in the "Switchbot Mini Hub". The result is printed in the `home-assistant.log` file (avail. in homeassistant main config folder)
 fields:
 
       """
@@ -46,7 +46,6 @@ fields:
     for dev in r.json()['body'].get("infraredRemoteList"):
         log.warning(f"  {dev.get('deviceName')} [{dev.get('remoteType')}] -> {dev.get('deviceId')}")
 
-#services
 @service
 def switchbot_hvac(deviceId, temperature, mode, fan_speed, state):
     """yaml
