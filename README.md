@@ -44,6 +44,17 @@ Parameters:
     - int value between `1` (auto), `2` (low), `3` (medium), `4` (high)
 - `state:`
     - string value between `on` and `off`
+### SwitchBot Turn On
+
+Parameters:
+- `deviceId:`
+
+
+### SwitchBot Turn Off
+
+Parameters:
+- `deviceId:`
+
 
 ### SwitchBot Generic Command API Interface
 _For use this service read [here][generic-cmd-link]_
@@ -52,7 +63,7 @@ Parameters:
 - `deviceId:`
     - to get this id read [here][deviceid-link]
 - `command:`
-- `parameter:`
+- `parameter:` (optional)
 - `commandType:`
 
 
