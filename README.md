@@ -15,8 +15,8 @@ For more info click [here][switchbot-api-repo]
 
 
 ## Requirements
-- HACS
-    - PyScript Integration
+- [HACS](https://hacs.xyz/docs/setup/prerequisites)
+    - [PyScript](https://hacs-pyscript.readthedocs.io/en/stable/installation.html) Integration
 
 ## Installation
 1. Simply clone this repo and copy the pyscript folder in your home assisant config folder 
@@ -31,6 +31,10 @@ This scrypt (for now) provides two services in home assisant:
 
 - [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
 - [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
+
+### SwitchBot List Devices
+_List the SwitchBot devices in the logfile `home-assistant.log` so their `deviceId` can be retrieved._
+
 
 ### SwitchBot HVAC API Interface
 Parameters:
