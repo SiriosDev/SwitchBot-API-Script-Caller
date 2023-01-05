@@ -10,6 +10,8 @@ For more info click [here][switchbot-api-repo]
 - [Installation](#installation)
 - [How To Use](#how-to-use)
     - [HVAC](#switchbot-hvac-api-interface)
+    - [Turn On](#switchbot-turn-on)
+    - [Turn Off](#switchbot-turn-off)
     - [Generic Command](#switchbot-generic-command-api-interface)
 - [Work in Progress](#work-in-progress)
 
@@ -74,6 +76,8 @@ This script (for now) provides two services in home assisant:
 ### Summary
 - [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
 - [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
+- [SwitchBot Turn On (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
+- [SwitchBot Turn On (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
 
 ### SwitchBot HVAC API Interface
 _Interface for infrared HVAC (heating, ventilation and air conditioning) device._
