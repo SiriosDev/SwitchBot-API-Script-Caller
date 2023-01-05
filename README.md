@@ -89,6 +89,17 @@ _Interface for infrared HVAC (heating, ventilation and air conditioning) device.
     - int value between `1` (auto), `2` (low), `3` (medium), `4` (high)
 - `state:`
     - string value between `on` and `off`
+### SwitchBot Turn On
+
+Parameters:
+- `deviceId:`
+
+
+### SwitchBot Turn Off
+
+Parameters:
+- `deviceId:`
+
 
 ### SwitchBot Generic Command API Interface
 _Allows you to send any request to the API. (See [documentation][generic-cmd-link])_
@@ -98,7 +109,7 @@ _Allows you to send any request to the API. (See [documentation][generic-cmd-lin
     - to get this id read [here][deviceid-link]
 - `command:`
     - One of the command supported by the device. (see [documentation][generic-cmd-link])
-- `parameter:`
+- `parameter:` (optional)
     - Parameter for the command, if required (e.g. `SetChannel`)
     - use `default` if not used
 - `commandType:`
