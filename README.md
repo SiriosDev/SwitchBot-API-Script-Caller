@@ -23,12 +23,12 @@ For more info click [here][switchbot-api-repo]
 ### Procedure
 1. **Clone this repository in your config folder**
    ```sh
-   cd SwitchBotAPIScriptCaller/
+   cd /config
    git clone https://github.com/SiriosDev/SwitchBot-API-Script-Caller.git
    ```
 2. **Include [`pyscript/switchbot.yaml`](./pyscript/switchbot.yaml) in your `pyscript/config.yaml` under the `switchbot` section**
    ```yaml
-   # pyscript/config.yaml
+   # /config/pyscript/config.yaml
    allow_all_imports: true
    apps:
    # (...)
@@ -49,11 +49,11 @@ For more info click [here][switchbot-api-repo]
     ```
 4. **Link the files in the `pyscript` directory**
    ```sh
-   # use `mkdir -p pyscript/apps/` if the directory doesn't exist
-   cd pyscript/apps/
+   # use `mkdir -p /config/pyscript/apps/` if the directory doesn't exist
+   cd /config/pyscript/apps/
    
    # Create a symbolic link to the apps directory named switchbot
-   ln -s {your-folder}/SwitchBot-API-Script-Caller/pyscript/apps switchbot
+   ln -s /config/SwitchBot-API-Script-Caller/pyscript/apps switchbot
    ```
    
 ### Further Update
