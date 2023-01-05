@@ -62,7 +62,7 @@ git pull
 ```
 
 ### Installation Notes
-- In order to see the `Developper options` in the Switchbot app, click repetively on the version number in the App's settings
+- In order to see the `Developper options` in the Switchbot app (version ≥6.14), click repetively on the version number in the App's settings
 - A symbolic link is symbolic and represent the exact path you enter, if you move the targeted file or if the target is outside of the container (e.g. when using docker) the link will not work. Make sure that you are using a relative path that is accessible for the host reading the link. 
 - Ensure that `pyscript` is operational before to install this script.
 
