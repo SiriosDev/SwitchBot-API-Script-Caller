@@ -15,8 +15,8 @@ For more info click [here][switchbot-api-repo]
 
 
 ## Requirements
-- HACS ([docs](https://hacs.xyz/docs/setup/prerequisites))
-    - PyScript Integration ([docs](https://hacs-pyscript.readthedocs.io/en/latest/installation.html))
+- HACS ([docs][hacs-docs])
+    - PyScript Integration ([docs][pyscript-docs])
       
 
 ## Installation
@@ -99,8 +99,8 @@ _Allows you to send any request to the API. (See [documentation][generic-cmd-lin
 - `command:`
     - One of the command supported by the device. (see [documentation][generic-cmd-link])
 - `parameter:`
-    - Parameter for the command, if required (e.g. SetChannel)
-    - use "default" if not used
+    - Parameter for the command, if required (e.g. `SetChannel`)
+    - use `default` if not used
 - `commandType:`
     - `command` for standard commands
     - `customize` for custom commands
@@ -116,6 +116,8 @@ For any problems open an Issue, (soon I will insert a template for that).
 
 
 [licensing-shield]: https://img.shields.io/github/license/SiriosDev/SwitchBot-API-Script-Caller?style=flat-square
+[hacs-docs]: https://hacs.xyz/docs/setup/prerequisites
+[pyscript-docs]: https://hacs-pyscript.readthedocs.io/en/latest/installation.html
 [switchbot-api-repo]: https://github.com/OpenWonderLabs/SwitchBotAPI
 [OpenWonderLabs-lnk]: https://github.com/OpenWonderLabs
 [generic-cmd-link]: https://github.com/OpenWonderLabs/SwitchBotAPI#send-device-control-commands
