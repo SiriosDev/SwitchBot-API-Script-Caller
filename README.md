@@ -95,7 +95,7 @@ _Allows you to send any request to the API. (See [documentation][generic-cmd-lin
 - `deviceId:`
     - to get this id read [here][deviceid-link]
 - `command:`
-    - One of the command supported by the device. (see [documentation](https://github.com/OpenWonderLabs/SwitchBotAPI#command-set-for-virtual-infrared-remote-devices))
+    - One of the command supported by the device. (see [documentation][generic-cmd-link])
 - `parameter:`
     - Parameter for the command, if required (e.g. SetChannel)
     - use "default" if not used
