@@ -2,7 +2,4 @@
 
 allow_all_imports: true
 apps:
-  switchbot:
-    token: !secret switchbot_token # copy and paste from the SwitchBot app V6.14 or later
-    secret: !secret switchbot_sec # copy and paste from the SwitchBot app V6.14 or later
-    nonce: !secret switchbot_nonc # random generated
+  switchbot: !include switchbot.yaml
