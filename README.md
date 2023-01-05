@@ -15,25 +15,68 @@ For more info click [here][switchbot-api-repo]
 
 
 ## Requirements
-- HACS
-    - PyScript Integration
+- HACS ([doc](https://hacs.xyz/docs/setup/prerequisites))
+    - PyScript Integration ([doc](https://hacs-pyscript.readthedocs.io/en/latest/installation.html)) with `import-all` option activated
+      
 
 ## Installation
-1. Simply clone this repo and copy the pyscript folder in your home assisant config folder 
-2. Include (or copy) [`pyscript/config.yaml`](./pyscript/config.yaml) in configuration.yaml under -> pyscript:
-3. In [`pyscript/config.yaml`](./pyscript/config.yaml), set and search the following parameters (secret suggested):
-    - Token (`token:`) from `Developer Option` in the SwitchBot App
-    - Secret Key (`secret:`) from `Developer Option` in the SwitchBot App
-    - Random Valude (`nonce:`) I suggest using an uuid generaotr, but any alphanumeric string is fine.
+### Procedure
+1. **Clone this repository in the `deps/` directory**
+   ```sh
+   cd deps/
+   git clone https://github.com/SiriosDev/SwitchBot-API-Script-Caller.git
+   cd ..
+   ```
+3. **Include [`pyscript/config.yaml`](./pyscript/config.yaml) in `configuration.yaml` under the `pyscript` section**
+   ```yaml
+   # configuration.yaml
+   # (...)
+   pyscript: !include deps/SwitchBot-API-Script-Caller/pyscript/config.yaml
+   # (...)
+   ```
+5. **Set the authentication secrets in `secrets.yaml` homeassistant file**
+    - Random Value (`switchbot_nonc`) (I suggest using an UUID generator, but any unique alphanumeric string is fine)
+    ```yaml
+    # secrets.yaml
+    # (...)
+    # Token and Secret Key : from `Developer Option` in the SwitchBot App (version ≥6.14)
+    switchbot_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    switchbot_sec: xxxxxxxxxxxx
+    # Random Value: you can use a UUID generator, but any unique alphanumeric string is OK
+    switchbot_nonc: xxxxx-xxxxx-xxxxx-xxxxx-xxxxx
+    ```
+6. **Link the files in the `pyscript` directory**
+   ```sh
+   # use `mkdir -p pyscript/apps/` if the directory doesn't exist
+   cd pyscript/apps/
+   
+   # Create a symbolic link to the apps directory named switchbot
+   ln -s ../../deps/SwitchBot-API-Script-Caller/pyscript/apps switchbot
+   ```
+   
+### Further Update
+By following this procedure, the script can then be updated with newer version using git.
+```sh
+cd deps/SwitchBot-API-Script-Caller
+git pull
+```
+
+### Installation Notes
+- In order to see the `Developper options` in the Switchbot app, click repetively on the version number in the App's settings
+- A symbolic link is symbolic and represent the exact path you enter, if you move the targeted file or if the target is outside of the container (e.g. when using docker) the link will not work. Make sure that you are using a relative path that is accessible for the host reading the link. 
+- Ensure that `pyscript` is operational before to install this script.
 
 ## How To Use
-This scrypt (for now) provides two services in home assisant:
+This script (for now) provides two services in home assisant:
 
+### Summary
 - [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
 - [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
 
 ### SwitchBot HVAC API Interface
-Parameters:
+_Interface for HVAC (heating, ventilation and air conditioning) device._
+
+**Parameters:**
 - `deviceId:`
     - to get this id read [here][deviceid-link]
 - `temperature:`
@@ -46,14 +89,19 @@ Parameters:
     - string value between `on` and `off`
 
 ### SwitchBot Generic Command API Interface
-_For use this service read [here][generic-cmd-link]_
+_Allows you to send any request to the API. (See [documentation][generic-cmd-link])_
 
-Parameters:
+**Parameters:**
 - `deviceId:`
     - to get this id read [here][deviceid-link]
 - `command:`
+    - One of the command supported by the device. (see [documentation](https://github.com/OpenWonderLabs/SwitchBotAPI#command-set-for-virtual-infrared-remote-devices))
 - `parameter:`
+    - Parameter for the command, if required (e.g. SetChannel)
+    - use "default" if not used
 - `commandType:`
+    - `command` for standard commands
+    - `customize` for others
 
 
 ## Work in Progress
