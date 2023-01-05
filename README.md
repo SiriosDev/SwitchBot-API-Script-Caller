@@ -33,7 +33,7 @@ For more info click [here][switchbot-api-repo]
    apps:
    # (...)
    # ↓↓↓ attention indentation
-    switchbot: !include SwitchBot-API-Script-Caller/pyscript/config.yaml
+    switchbot: !include SwitchBot-API-Script-Caller/pyscript/switchbot.yaml
    # (...)
    ```
 3. **Set the authentication secrets in `secrets.yaml` homeassistant file**
