@@ -15,26 +15,28 @@ For more info click [here][switchbot-api-repo]
 
 
 ## Requirements
-- HACS ([doc](https://hacs.xyz/docs/setup/prerequisites))
-    - PyScript Integration ([doc](https://hacs-pyscript.readthedocs.io/en/latest/installation.html)) with `import-all` option activated
+- HACS ([docs](https://hacs.xyz/docs/setup/prerequisites))
+    - PyScript Integration ([docs](https://hacs-pyscript.readthedocs.io/en/latest/installation.html))
       
 
 ## Installation
 ### Procedure
-1. **Clone this repository in the `deps/` directory**
+1. **Clone this repository in your config folder**
    ```sh
-   cd deps/
+   cd SwitchBotAPIScriptCaller/
    git clone https://github.com/SiriosDev/SwitchBot-API-Script-Caller.git
-   cd ..
    ```
-3. **Include [`pyscript/config.yaml`](./pyscript/config.yaml) in `configuration.yaml` under the `pyscript` section**
+2. **Include [`pyscript/switchbot.yaml`](./pyscript/switchbot.yaml) in your `pyscript/config.yaml` under the `switchbot` section**
    ```yaml
-   # configuration.yaml
+   # pyscript/config.yaml
+   allow_all_imports: true
+   apps:
    # (...)
-   pyscript: !include deps/SwitchBot-API-Script-Caller/pyscript/config.yaml
+   # ↓↓↓ attention indentation
+    switchbot: !include SwitchBot-API-Script-Caller/pyscript/config.yaml
    # (...)
    ```
-5. **Set the authentication secrets in `secrets.yaml` homeassistant file**
+3. **Set the authentication secrets in `secrets.yaml` homeassistant file**
     - Random Value (`switchbot_nonc`) (I suggest using an UUID generator, but any unique alphanumeric string is fine)
     ```yaml
     # secrets.yaml
@@ -43,21 +45,21 @@ For more info click [here][switchbot-api-repo]
     switchbot_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     switchbot_sec: xxxxxxxxxxxx
     # Random Value: you can use a UUID generator, but any unique alphanumeric string is OK
-    switchbot_nonc: xxxxx-xxxxx-xxxxx-xxxxx-xxxxx
+    switchbot_nonc: xxxxxxxxxx
     ```
-6. **Link the files in the `pyscript` directory**
+4. **Link the files in the `pyscript` directory**
    ```sh
    # use `mkdir -p pyscript/apps/` if the directory doesn't exist
    cd pyscript/apps/
    
    # Create a symbolic link to the apps directory named switchbot
-   ln -s ../../deps/SwitchBot-API-Script-Caller/pyscript/apps switchbot
+   ln -s {your-folder}/SwitchBot-API-Script-Caller/pyscript/apps switchbot
    ```
    
 ### Further Update
 By following this procedure, the script can then be updated with newer version using git.
 ```sh
-cd deps/SwitchBot-API-Script-Caller
+cd SwitchBot-API-Script-Caller
 git pull
 ```
 
