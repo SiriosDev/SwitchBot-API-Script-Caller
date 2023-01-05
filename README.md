@@ -74,7 +74,7 @@ This script (for now) provides two services in home assisant:
 - [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
 
 ### SwitchBot HVAC API Interface
-_Interface for HVAC (heating, ventilation and air conditioning) device._
+_Interface for infrared HVAC (heating, ventilation and air conditioning) device._
 
 **Parameters:**
 - `deviceId:`
