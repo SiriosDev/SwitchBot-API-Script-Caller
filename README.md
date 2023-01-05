@@ -103,7 +103,7 @@ _Allows you to send any request to the API. (See [documentation][generic-cmd-lin
     - use "default" if not used
 - `commandType:`
     - `command` for standard commands
-    - `customize` for others
+    - `customize` for custom commands
 
 
 ## Work in Progress
