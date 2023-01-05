@@ -53,7 +53,7 @@ For more info click [here][switchbot-api-repo]
    cd /config/pyscript/apps/
    
    # Create a symbolic link to the apps directory named switchbot
-   ln -s /config/SwitchBot-API-Script-Caller/pyscript/apps switchbot
+   ln -s /config/SwitchBot-API-Script-Caller/pyscript/apps/switchbot.py switchbot.py
    ```
    
 ### Further Update
