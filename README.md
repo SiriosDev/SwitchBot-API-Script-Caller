@@ -75,6 +75,7 @@ git pull
     </details>
 - A symbolic link is symbolic and represent the exact path you enter, if you move the targeted file or if the target is outside of the container (e.g. when using docker) the link will not work. Make sure that you are using a relative path that is accessible for the host reading the link. 
 - Ensure that `pyscript` is operational before to install this script.
+- Except dirs strictly related to pyscript, all others dir are recommended, so organize them as you like, keeping in mind that changing the contents of the "`clone`", could cause the update via `git pull` to fail.
 
 ## How To Use
 This script (for now) provides two services in home assisant:
