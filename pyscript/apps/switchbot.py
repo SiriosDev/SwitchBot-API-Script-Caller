@@ -182,7 +182,48 @@ fields:
     requestHelper(url,myjson,headers_dict)
 
 @service
-def switchbot_generic_command(deviceId, command, parameter, commandType):
+def switchbot_turn_on(deviceId=None):
+    """yaml
+name: SwitchBot Turn Device ON
+description: Turn Switchbot controlled device ON
+fields:
+  deviceId:
+    name: Device ID
+    description: Target deviceId
+    example: 00-000000000000-00000000
+    default:
+    required: true
+    selector:
+      text:
+    """
+    headers_dict=auth(**pyscript.app_config)
+    url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
+    myjson= {"command": "turnOn", "commandType": "command"}
+    requestHelper(url,myjson,headers_dict)
+
+@service
+def switchbot_turn_off(deviceId=None):
+    """yaml
+name: SwitchBot Turn Device OFF
+description: Turn Switchbot controlled device OFF
+fields:
+  deviceId:
+    name: Device ID
+    description: Target deviceId
+    example: 00-000000000000-00000000
+    default:
+    required: true
+    selector:
+      text:
+    """
+    headers_dict=auth(**pyscript.app_config)
+    url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
+    myjson= {"command": "turnOff", "commandType": "command"}
+    requestHelper(url,myjson,headers_dict)
+
+
+@service
+def switchbot_generic_command(deviceId=None, command=None, parameter=None, commandType=None):
     """yaml
 name: SwitchBot Generic Command API Interface
 description: This (py)script allows you to control all device in your "Switchbot Home" (refer to https://github.com/OpenWonderLabs/SwitchBotAPI)
@@ -200,7 +241,7 @@ fields:
     name: Command
     description: the name of the command
     example: turnOff
-    default: turnOff
+    default: 
     required: true
     selector:
       text:
@@ -208,9 +249,9 @@ fields:
   parameter:
     name: Parameters
     description: some commands require parameters, such as SetChannel
-    example: default
-    default: default
-    required: true
+    example: 
+    default: 
+    required: false
     selector:
       text:
 
@@ -221,12 +262,18 @@ fields:
     default: command
     required: true
     selector:
-      text:
+      select:
+        options:
+          - command
+          - customize
 
       """
     headers_dict=auth(**pyscript.app_config)
         
     url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
-    myjson= {"command": command,"parameter": parameter,"commandType": commandType}
+    myjson= {"command": command, "commandType": commandType}
+    if parameter is not None:
+      myjson["parameter"] = parameter
+
     requestHelper(url,myjson,headers_dict)
 
