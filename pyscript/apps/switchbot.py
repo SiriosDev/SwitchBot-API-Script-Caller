@@ -120,6 +120,7 @@ fields:
     required: true
     selector:
       entity:
+        domain: switch
 
   temperature:
     name: Temperature
@@ -194,7 +195,8 @@ fields:
     default:
     required: true
     selector:
-      text:
+      entity:
+        domain: switch
     """
     headers_dict=auth(**pyscript.app_config)
     url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
@@ -214,7 +216,8 @@ fields:
     default:
     required: true
     selector:
-      text:
+      entity:
+        domain: switch
     """
     headers_dict=auth(**pyscript.app_config)
     url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
@@ -235,7 +238,8 @@ fields:
     default:
     required: true
     selector:
-      text:
+      entity:
+        domain: switch
 
   command:
     name: Command
