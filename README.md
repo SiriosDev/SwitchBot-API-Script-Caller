@@ -9,18 +9,19 @@ For more info click [here][switchbot-api-repo]
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [How To Use](#how-to-use)
-    - [HVAC](#switchbot-hvac-api-interface)
+    - [Refresh Devices](#switchbot-refresh-devices)
     - [Turn On](#switchbot-turn-on)
     - [Turn Off](#switchbot-turn-off)
+    - [HVAC](#switchbot-hvac-api-interface)
     - [Generic Command](#switchbot-generic-command-api-interface)
 - [Work in Progress](#work-in-progress)
-
+- [Changelog](#changelog)
 
 ## Requirements
+
 - HACS ([docs][hacs-docs])
     - PyScript Integration ([docs][pyscript-docs])
       
-
 ## Installation
 ### Procedure
 1. **Clone this repository in your config folder**
@@ -64,6 +65,8 @@ By following this procedure, the script can then be updated with newer version u
 cd SwitchBot-API-Script-Caller
 git pull
 ```
+⚠️ **See changelog before updating.**  
+The project is still in developpement and breaking changes may occurs.
 
 ### Installation Notes
 - In order to see the `Developper options` in the Switchbot app (version ≥6.14), click repetively on the version number in the App's settings.
@@ -78,20 +81,45 @@ git pull
 - Except dirs strictly related to pyscript, all others dir are recommended, so organize them as you like, keeping in mind that changing the contents of the "`clone`", could cause the update via `git pull` to fail.
 
 ## How To Use
-This script (for now) provides two services in home assisant:
+This script (for now) provides the following services in home assisant.
+It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devices) first in order to be able to use the other features, as it will generate the required Home Assistant entities for your devices.
 
 ### Summary
+- [SwitchBot Refresh Devices (`pyscript.switchbot_refresh_devices`)](#switchbot-refresh-devices)
+- [SwitchBot Turn ON (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
+- [SwitchBot Turn OFF (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
 - [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
 - [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
-- [SwitchBot Turn On (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
-- [SwitchBot Turn On (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
 
-### SwitchBot HVAC API Interface
+### 🔸SwitchBot Refresh Devices
+_Create Home Assistant `switch` entity for each IR Device connected with your SwitchBot Hubs. Devices are stored as `switch.switchbot_remote_<device_name>`._  
+_`<device_name>` correspond to the name of the device in the SwitchBot app._  
+_if `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
+_The entities can then be used for sending commands using other functions of this pyscript._
+_In case the device doesn't exist in the future, you will be notified on your devices._
+
+Parameters: None
+
+### 🔸SwitchBot Turn On
+_Turn a device ON_
+
+Parameters:
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
+
+### 🔸SwitchBot Turn Off
+_Turn a device OFF_
+
+Parameters:
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
+
+### 🔸SwitchBot HVAC API Interface
 _Interface for infrared HVAC (heating, ventilation and air conditioning) device._
 
 **Parameters:**
-- `deviceId:`
-    - to get this id read [here][deviceid-link]
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 - `temperature:`
     - int value from `16` to `30`
 - `mode:`
@@ -100,24 +128,14 @@ _Interface for infrared HVAC (heating, ventilation and air conditioning) device.
     - int value between `1` (auto), `2` (low), `3` (medium), `4` (high)
 - `state:`
     - string value between `on` and `off`
-### SwitchBot Turn On
-
-Parameters:
-- `deviceId:`
 
 
-### SwitchBot Turn Off
-
-Parameters:
-- `deviceId:`
-
-
-### SwitchBot Generic Command API Interface
+### 🔸SwitchBot Generic Command API Interface
 _Allows you to send any request to the API. (See [documentation][generic-cmd-link])_
 
 **Parameters:**
-- `deviceId:`
-    - to get this id read [here][deviceid-link]
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 - `command:`
     - One of the command supported by the device. (see [documentation][generic-cmd-link])
 - `parameter:` (optional)
@@ -136,6 +154,24 @@ All rights to the [API][switchbot-api-repo] belong to [OpenWonderLabs][OpenWonde
 For any problems open an Issue, (soon I will insert a template for that).
 
 
+## Changelog
+### 2023.01.14 v0.1.0 (⚠️ Breaking changes)
+**Add service `SwitchBot Refresh Devices`** : Retrieves your IR devices from the API. Services now requires `device` instead of `deviceId`. No need to copy paste the id manually anymore.
+
+Previously:  
+  - Services param was `deviceId`
+ 
+Now:
+  - Services Param is `device` (home assistant ID for sensor, e.g. `switch.switchbot_remote_my_light`)  
+ 
+Make sure to run `SwitchBot Refresh Devices` before configuring anything else.
+
+### 2023.01.05 (🟢 2 New Features)
+**Add Service `SwitchBot Turn On`**  
+**Add Service `SwitchBot Turn Off`**
+
+The `turn<On/Off>` services allow you to switch On and Off your device with a simple command requiring only the deviceId.
+Almost all devices are compatible with this command according to the API documentation.
 
 [licensing-shield]: https://img.shields.io/github/license/SiriosDev/SwitchBot-API-Script-Caller?style=flat-square
 [hacs-docs]: https://hacs.xyz/docs/setup/prerequisites
