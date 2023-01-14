@@ -78,24 +78,48 @@ git pull
 - Except dirs strictly related to pyscript, all others dir are recommended, so organize them as you like, keeping in mind that changing the contents of the "`clone`", could cause the update via `git pull` to fail.
 
 ## How To Use
-This script (for now) provides two services in home assisant:
+This script (for now) provides the following services in home assisant.
+It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devices) first in order to be able to use the other features, as it will generate the required Home Assistant entities for your devices.
 
 ### Summary
-- [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
-- [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
+- [SwitchBot Refresh Devices (`pyscript.switchbot_refresh_devices`)](#switchbot-refresh-devices)
 - [SwitchBot Turn On (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
 - [SwitchBot Turn On (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
+- [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
+- [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
 
 ### SwitchBot List Devices
 _List the SwitchBot devices in the logfile `home-assistant.log` so their `deviceId` can be retrieved._
 
 
+### SwitchBot Refresh Devices
+_Create Home Assistant `Switch` entity for each IR Device connected with your SwitchBot Hubs_  
+_Devices are stored as `switch.switchbot_remote_<device_name>`._  
+_`<device_name>` correspond to the name of the device in the SwitchBot app._  
+_The entities can then be used for sending commands using other functions of this pyscript._
+
+Parameters: None
+
+### SwitchBot Turn On
+_Turn a device ON_
+
+Parameters:
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
+
+### SwitchBot Turn Off
+_Turn a device OFF_
+
+Parameters:
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
+
 ### SwitchBot HVAC API Interface
 _Interface for infrared HVAC (heating, ventilation and air conditioning) device._
 
 **Parameters:**
-- `deviceId:`
-    - to get this id read [here][deviceid-link]
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 - `temperature:`
     - int value from `16` to `30`
 - `mode:`
@@ -104,24 +128,13 @@ _Interface for infrared HVAC (heating, ventilation and air conditioning) device.
     - int value between `1` (auto), `2` (low), `3` (medium), `4` (high)
 - `state:`
     - string value between `on` and `off`
-### SwitchBot Turn On
-
-Parameters:
-- `deviceId:`
-
-
-### SwitchBot Turn Off
-
-Parameters:
-- `deviceId:`
-
 
 ### SwitchBot Generic Command API Interface
 _Allows you to send any request to the API. (See [documentation][generic-cmd-link])_
 
 **Parameters:**
-- `deviceId:`
-    - to get this id read [here][deviceid-link]
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 - `command:`
     - One of the command supported by the device. (see [documentation][generic-cmd-link])
 - `parameter:` (optional)
