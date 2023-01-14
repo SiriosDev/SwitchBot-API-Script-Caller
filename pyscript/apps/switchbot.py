@@ -98,9 +98,11 @@ fields:
     url=f"https://api.switch-bot.com/v1.1/devices"
     r = requestGetHelper(url, {}, headers_dict)
     log.info(str(r.json()))
-    if r.json()['body'].get("infraredRemoteList") is not None:
-      clear_existing()
-    for dev in r.json()['body'].get("infraredRemoteList"):
+    infrared = r.json()['body'].get("infraredRemoteList")
+    if infrared is None:
+      return None
+    clear_existing()
+    for dev in infrared:
         log.warning(f"Adding Switchbot Device {dev.get(KEY_DEV_NAME)} [{dev.get(KEY_DEV_TYPE)}] -> {dev.get(KEY_DEV_ID)}")
         dev['friendly_name'] = gen_dev_name(dev)
         dev['icon'] = gen_icon(dev)
