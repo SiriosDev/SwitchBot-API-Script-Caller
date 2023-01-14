@@ -1,4 +1,11 @@
 import time, hashlib, hmac, base64, requests
+import re, yaml, io
+
+PREFIX="switchbot_remote_"
+DOMAIN="switch"
+KEY_DEV_TYPE='remoteType'
+KEY_DEV_NAME='deviceName'
+KEY_DEV_ID='deviceId'
 
 # "input" from config
 def auth(token=None, secret=None, nonce=None):
@@ -18,6 +25,59 @@ def auth(token=None, secret=None, nonce=None):
     h={"Authorization": (str(token)), "t": (str(t)), "sign": (str(sign, 'utf-8')), "nonce": (str(nonce)), "Content-Type": "application/json; charset=utf8"}
     return h
 
+def gen_icon(dev):
+  '''Generate icon based on device type. Default to a remote icon.'''
+  icons={'Projector': 'projector', 'Light': 'lightbulb-on', 'TV':'television', 'Fan':'fan'}
+  typ = dev.get(KEY_DEV_TYPE)
+  if typ is None or typ not in icons:
+    return 'mdi:remote'
+  return 'mdi:'+icons[typ]
+
+def clear_existing():
+  '''Clear switchbot devices which were saved to avoid zombies.'''
+  states = state.names(domain=DOMAIN)
+  prefix = f'{DOMAIN}.{PREFIX}'
+  for s in states:
+    if s[0:len(prefix)] == prefix:
+      log.info(f"deleting sensor : {s}")
+      state.delete(s)
+
+def gen_dev_uid(dev:dict):
+  '''Generate a Unique ID for Switchbot devices. (devices must have unique names in switchbot app so it works)'''
+  name = dev.get(KEY_DEV_NAME)
+  if name is not None:
+    name = name.lower()
+    name = re.sub(r'[^0-9a-z]+', '_', name)
+    if name not in ['_', '']:
+      return PREFIX+name
+  return PREFIX + re.sub(r'[^0-9a-z]+', '_', str(dev.get(KEY_DEV_TYPE)).lower())+'_'+str(dev.get(KEY_DEV_ID)[-4:])
+
+
+def gen_dev_name(dev):
+  name = ['Switchbot']
+  if (dev.get(KEY_DEV_NAME) is not None):
+    name.append(dev.get(KEY_DEV_NAME))
+  name.append(f"[IR {dev.get(KEY_DEV_TYPE)}]")
+  return ' '.join(name)
+
+@pyscript_executor
+def extract_device_id(device, _recursived=0):
+  ''' Retrieve the Switchbot DeviceId. force refresh the devices list if the device doesnt exists.''' 
+  try:
+    uid = state.get(device)
+    return uid
+  except NameError:
+    if _recursived == 0:
+      switchbot_refresh_devices()
+      return extract_device_id(device, _recursived=_recursived+1)
+    else:
+      msg=f'Warning: impossible to find {device}. [pyscript SwitchBot]'
+      service.call('notify', 'persistent_notification', message=msg)
+      service.call('notify', 'notify', message=msg)
+      return None
+
+
+
 @pyscript_executor
 def requestHelper(_url,_json,_headers):
     x=requests.post(_url,json = _json, headers=_headers)
@@ -28,38 +88,38 @@ def requestGetHelper(_url,_json,_headers):
 
 #services
 @service
-def switchbot_list_devices():
+def switchbot_refresh_devices():
     """yaml
-name: SwitchBot list devices
-description: This pyscript list registered devices in the "Switchbot Mini Hub". The result is printed in the `home-assistant.log` file (avail. in homeassistant main config folder)
+name: SwitchBot refresh devices
+description: This pyscript list registered devices in the "Switchbot Mini Hub". The devices are saved as "switch.switchbot_remote_<deviceName>" in Home Assistant and can be used for other commands.
 fields:
-
       """
     headers_dict=auth(**pyscript.app_config)
     url=f"https://api.switch-bot.com/v1.1/devices"
     r = requestGetHelper(url, {}, headers_dict)
-    log.warning(str(r.json()))
-    log.warning(" --- Native devices ---")
-    for dev in r.json()['body'].get("deviceList"):
-        log.warning(f"  {dev.get('deviceName')} [{dev.get('deviceType')}] -> {dev.get('deviceId')}")
-    log.warning(" --- Infrared devices ---")
+    log.info(str(r.json()))
+    if r.json()['body'].get("infraredRemoteList") is not None:
+      clear_existing()
     for dev in r.json()['body'].get("infraredRemoteList"):
-        log.warning(f"  {dev.get('deviceName')} [{dev.get('remoteType')}] -> {dev.get('deviceId')}")
+        log.warning(f"Adding Switchbot Device {dev.get(KEY_DEV_NAME)} [{dev.get(KEY_DEV_TYPE)}] -> {dev.get(KEY_DEV_ID)}")
+        dev['friendly_name'] = gen_dev_name(dev)
+        dev['icon'] = gen_icon(dev)
+        state.set(f'{DOMAIN}.{gen_dev_uid(dev)}', value=dev.get(KEY_DEV_ID), new_attributes=dev )
 
 @service
-def switchbot_hvac(deviceId, temperature, mode, fan_speed, state):
+def switchbot_hvac(device, temperature, mode, fan_speed, state):
     """yaml
 name: SwitchBot HVAC API Interface
 description: This (py)script allows you to control HVAC "saved" in "Switchbot Mini Hub" (or other switchbot brand ir blasters !! not yet tested !!).
 fields:
-  deviceId:
-    name: Device ID
-    description: HVAC Target device id (get req. to api)
-    example: 00-000000000000-00000000
+  device:
+    name: Device
+    description: HVAC Target device
+    example: switch.switchbot_remote_hvac
     default:
     required: true
     selector:
-      text:
+      entity:
 
   temperature:
     name: Temperature
