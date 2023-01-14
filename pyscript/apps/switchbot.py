@@ -40,7 +40,7 @@ def clear_existing():
   prefix = f'{DOMAIN}.{PREFIX}'
   for s in states:
     if s[0:len(prefix)] == prefix:
-      log.info(f"deleting sensor : {s}")
+      log.warning(f"deleting sensor : {s}")
       state.delete(s)
 
 def gen_dev_uid(dev:dict):
@@ -61,7 +61,6 @@ def gen_dev_name(dev):
   name.append(f"[IR {dev.get(KEY_DEV_TYPE)}]")
   return ' '.join(name)
 
-@pyscript_executor
 def extract_device_id(device, _recursived=0):
   ''' Retrieve the Switchbot DeviceId. force refresh the devices list if the device doesnt exists.''' 
   try:
