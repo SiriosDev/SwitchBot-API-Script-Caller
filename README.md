@@ -1,6 +1,6 @@
 [![License][licensing-shield]](LICENSE)
 
-# SwitchBot API Script Caller
+# SwitchBot API Script Caller (v 0.1.0)
 
 SwitchBot API (Ver. 1.1) Script Caller, using pyscript for the scripting.
 
@@ -95,7 +95,7 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 _Create Home Assistant `switch` entity for each IR Device connected with your SwitchBot Hubs. Devices are stored as `switch.switchbot_remote_<device_name>`._  
 _`<device_name>` correspond to the name of the device in the SwitchBot app._  
 _if `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
-_The entities can then be used for sending commands using other functions of this pyscript._
+_The entities can then be used for sending commands using other functions of this pyscript. ⚠️ Not working stand alone ⚠️_
 _In case the device doesn't exist in the future, you will be notified on your devices._
 
 Parameters: None
