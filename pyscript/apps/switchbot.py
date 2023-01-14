@@ -184,6 +184,7 @@ fields:
 
 @service
 def switchbot_turn_on(device=None):
+
     """yaml
 name: SwitchBot Turn Device ON
 description: Turn Switchbot controlled device ON
