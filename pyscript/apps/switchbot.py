@@ -177,48 +177,50 @@ fields:
       """
     headers_dict=auth(**pyscript.app_config)
     
-    device_id = extract_device_id(device)
+    deviceId = extract_device_id(device)
     url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
     myjson= {"command": "setAll","parameter": f"{temperature},{mode},{fan_speed},{state}","commandType": "command"}
     requestHelper(url,myjson,headers_dict)
 
 @service
-def switchbot_turn_on(deviceId=None):
+def switchbot_turn_on(device=None):
     """yaml
 name: SwitchBot Turn Device ON
 description: Turn Switchbot controlled device ON
 fields:
-  deviceId:
-    name: Device ID
-    description: Target deviceId
-    example: 00-000000000000-00000000
+  device:
+    name: Device
+    description: Target device
+    example: switch.switchbot_remote_light
     default:
     required: true
     selector:
       entity:
         domain: switch
     """
+    deviceId = extract_device_id(device)
     headers_dict=auth(**pyscript.app_config)
     url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
     myjson= {"command": "turnOn", "commandType": "command"}
     requestHelper(url,myjson,headers_dict)
 
 @service
-def switchbot_turn_off(deviceId=None):
+def switchbot_turn_off(device=None):
     """yaml
 name: SwitchBot Turn Device OFF
 description: Turn Switchbot controlled device OFF
 fields:
-  deviceId:
-    name: Device ID
-    description: Target deviceId
-    example: 00-000000000000-00000000
+  device:
+    name: Device
+    description: Target device
+    example: switch.switchbot_remote_light
     default:
     required: true
     selector:
       entity:
         domain: switch
     """
+    deviceId = extract_device_id(device)
     headers_dict=auth(**pyscript.app_config)
     url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
     myjson= {"command": "turnOff", "commandType": "command"}
@@ -226,15 +228,15 @@ fields:
 
 
 @service
-def switchbot_generic_command(deviceId=None, command=None, parameter=None, commandType=None):
+def switchbot_generic_command(device=None, command=None, parameter=None, commandType=None):
     """yaml
 name: SwitchBot Generic Command API Interface
 description: This (py)script allows you to control all device in your "Switchbot Home" (refer to https://github.com/OpenWonderLabs/SwitchBotAPI)
 fields:
-  deviceId:
-    name: Device ID
-    description: Target deviceId (get req. to api)
-    example: 00-000000000000-00000000
+  device:
+    name: Device
+    description: Target device (get req. to api)
+    example: switch.switchbot_remote_light
     default:
     required: true
     selector:
@@ -272,6 +274,7 @@ fields:
           - customize
 
       """
+    deviceId = extract_device_id(device)
     headers_dict=auth(**pyscript.app_config)
         
     url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
