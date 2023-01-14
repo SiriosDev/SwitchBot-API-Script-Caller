@@ -27,11 +27,12 @@ def auth(token=None, secret=None, nonce=None):
 
 def gen_icon(dev):
   '''Generate icon based on device type. Default to a remote icon.'''
-  icons={'Projector': 'projector', 'Light': 'lightbulb-on', 'TV':'television', 'Fan':'fan'}
+  ico = 'remote'
+  icons = {'Projector': 'projector', 'Light': 'lightbulb-on', 'TV':'television', 'Fan':'fan'}
   typ = dev.get(KEY_DEV_TYPE)
-  if typ is None or typ not in icons:
-    return 'mdi:remote'
-  return 'mdi:'+icons[typ]
+  if typ in icons:
+    ico = icons[typ]
+  return 'mdi:'+ico
 
 def clear_existing():
   '''Clear switchbot devices which were saved to avoid zombies.'''
