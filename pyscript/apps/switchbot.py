@@ -175,7 +175,8 @@ fields:
         mode: list
       """
     headers_dict=auth(**pyscript.app_config)
-        
+    
+    device_id = extract_device_id(device)
     url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
     myjson= {"command": "setAll","parameter": f"{temperature},{mode},{fan_speed},{state}","commandType": "command"}
     requestHelper(url,myjson,headers_dict)
