@@ -1,6 +1,6 @@
 [![License][licensing-shield]](LICENSE)
 
-# SwitchBot API Script Caller (v 0.1.0)
+# SwitchBot API Script Caller (v 0.2.0)
 
 SwitchBot API (Ver. 1.1) Script Caller, using pyscript for the scripting.
 
@@ -89,6 +89,7 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot Turn ON (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
 - [SwitchBot Turn OFF (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
 - [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
+- [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-hvac-api-interface)
 - [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
 
 ### 🔸SwitchBot Refresh Devices
@@ -130,6 +131,16 @@ _Interface for infrared HVAC (heating, ventilation and air conditioning) device.
     - string value between `on` and `off`
 
 
+### 🔸SwitchBot IR Light Control
+_Interface for infrared Light (turnOn, turnOff, brightnessUp and brightnessDown) device._
+
+**Parameters:**
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
+- `command:`
+    - string value between `turnOn`, `turnOff`, `brightnessUp` and `brightnessDown`
+
+
 ### 🔸SwitchBot Generic Command API Interface
 _Allows you to send any request to the API. (See [documentation][generic-cmd-link])_
 
@@ -155,6 +166,10 @@ For any problems open an Issue, (soon I will insert a template for that).
 
 
 ## Changelog
+### 2023.01.15 v0.2.0 (🟢 New Feature)
+**Add service `SwitchBot IR Light Control`** : Send command via infrared to light device.
+
+
 ### 2023.01.14 v0.1.0 (⚠️ Breaking changes)
 **Add service `SwitchBot Refresh Devices`** : Retrieves your IR devices from the API. Services now requires `device` instead of `deviceId`. No need to copy paste the id manually anymore.
 
