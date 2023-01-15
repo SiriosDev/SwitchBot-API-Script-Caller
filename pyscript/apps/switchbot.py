@@ -8,6 +8,7 @@ KEY_DEV_NAME='deviceName'
 KEY_DEV_ID='deviceId'
 
 # "input" from config
+@pyscript_executor
 def auth(token=None, secret=None, nonce=None):
 
     token=str(token)
@@ -25,6 +26,7 @@ def auth(token=None, secret=None, nonce=None):
     h={"Authorization": (str(token)), "t": (str(t)), "sign": (str(sign, 'utf-8')), "nonce": (str(nonce)), "Content-Type": "application/json; charset=utf8"}
     return h
 
+@pyscript_executor
 def gen_icon(dev):
   '''Generate icon based on device type. Default to a remote icon.'''
   ico = 'remote'
@@ -34,6 +36,7 @@ def gen_icon(dev):
     ico = icons[typ]
   return 'mdi:'+ico
 
+@pyscript_executor
 def clear_existing():
   '''Clear switchbot devices which were saved to avoid zombies.'''
   states = state.names(domain=DOMAIN)
@@ -43,6 +46,7 @@ def clear_existing():
       log.warning(f"deleting sensor : {s}")
       state.delete(s)
 
+@pyscript_executor
 def gen_dev_uid(dev:dict):
   '''Generate a Unique ID for Switchbot devices. (devices must have unique names in switchbot app so it works)'''
   name = dev.get(KEY_DEV_NAME)
@@ -54,6 +58,7 @@ def gen_dev_uid(dev:dict):
   return PREFIX + re.sub(r'[^0-9a-z]+', '_', str(dev.get(KEY_DEV_TYPE)).lower())+'_'+str(dev.get(KEY_DEV_ID)[-4:])
 
 
+@pyscript_executor
 def gen_dev_name(dev):
   name = ['Switchbot']
   if (dev.get(KEY_DEV_NAME) is not None):
@@ -61,6 +66,7 @@ def gen_dev_name(dev):
   name.append(f"[IR {dev.get(KEY_DEV_TYPE)}]")
   return ' '.join(name)
 
+@pyscript_executor
 def extract_device_id(device, _recursived=0):
   ''' Retrieve the Switchbot DeviceId. force refresh the devices list if the device doesnt exists.''' 
   try:
@@ -73,27 +79,31 @@ def extract_device_id(device, _recursived=0):
     else:
       msg=f'Warning: impossible to find {device}. [pyscript SwitchBot]'
       service.call('notify', 'persistent_notification', message=msg)
-      service.call('notify', 'notify', message=msg)
+      #service.call('notify', 'notify', message=msg)
+      #uncomment and/or edit the above line to add other notification services on which to receive errors
       return None
 
 
 
 @pyscript_executor
-def requestHelper(_url,_json,_headers):
+def requestPostHelper(_url,_json,_headers):
     x=requests.post(_url,json = _json, headers=_headers)
 
 @pyscript_executor
 def requestGetHelper(_url,_json,_headers):
     return requests.get(_url,json = _json, headers=_headers)
-
-def command_execute(headers, device_id, command, parameter=None, custom=False):
+  
+@pyscript_executor
+def command_execute(device, command, parameter=None, custom=False):
+    headers=auth(**pyscript.app_config)
+    device_id=extract_device_id(device)
     url=f"https://api.switch-bot.com/v1.1/devices/{device_id}/commands"
     data= {"command": command, "commandType":"command"}
     if parameter is not None:
       data["parameter"] = parameter
     if custom:
       data["commandType"] = 'customize'
-    requestHelper(url, data, headers)
+    requestPostHelper(url, data, headers)
 
 #services
 @service
@@ -106,11 +116,15 @@ fields:
     headers_dict=auth(**pyscript.app_config)
     url=f"https://api.switch-bot.com/v1.1/devices"
     r = requestGetHelper(url, {}, headers_dict)
+    
     log.info(str(r.json()))
     infrared = r.json()['body'].get("infraredRemoteList")
+    
     if infrared is None:
       return None
+    
     clear_existing()
+    
     for dev in infrared:
         log.warning(f"Adding Switchbot Device {dev.get(KEY_DEV_NAME)} [{dev.get(KEY_DEV_TYPE)}] -> {dev.get(KEY_DEV_ID)}")
         dev['friendly_name'] = gen_dev_name(dev)
@@ -186,9 +200,7 @@ fields:
           - off
         mode: list
       """
-    deviceId = extract_device_id(device)
-    headers_dict = auth(**pyscript.app_config)
-    command_execute(headers_dict, deviceId, 'setAll', parameter=f"{temperature},{mode},{fan_speed},{state}")
+    command_execute(device, 'setAll', parameter=f"{temperature},{mode},{fan_speed},{state}")
 
 @service
 def switchbot_turn_on(device=None):
@@ -207,9 +219,7 @@ fields:
       entity:
         domain: switch
     """
-    deviceId = extract_device_id(device)
-    headers_dict = auth(**pyscript.app_config)
-    command_execute(headers_dict, deviceId, "turnOn")
+    command_execute(device, "turnOn")
 
 @service
 def switchbot_turn_off(device=None):
@@ -227,9 +237,7 @@ fields:
       entity:
         domain: switch
     """
-    deviceId = extract_device_id(device)
-    headers_dict=auth(**pyscript.app_config)
-    command_execute(headers_dict, deviceId, "turnOff")
+    command_execute(device, "turnOff")
 
 
 @service
@@ -279,6 +287,4 @@ fields:
           - customize
 
       """
-    deviceId = extract_device_id(device)
-    headers_dict = auth(**pyscript.app_config)
-    command_execute(headers_dict, deviceId, command, parameter=parameter, custom=(commandType=='custom'))
+    command_execute(device, command, parameter=parameter, custom=(commandType=='custom'))
