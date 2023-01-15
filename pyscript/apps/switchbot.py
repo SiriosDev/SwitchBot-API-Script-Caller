@@ -218,7 +218,7 @@ fields:
           - turnOff
           - brightnessUp
           - brightnessDown
-        mode: list
+        mode: dropdown
     """
     device_id = extract_device_id(device)
     headers = auth(**pyscript.app_config)
