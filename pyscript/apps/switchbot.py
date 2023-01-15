@@ -86,15 +86,6 @@ def requestHelper(_url,_json,_headers):
 def requestGetHelper(_url,_json,_headers):
     return requests.get(_url,json = _json, headers=_headers)
 
-def command_execute(headers, device_id, command, parameter=None, custom=False):
-    url=f"https://api.switch-bot.com/v1.1/devices/{device_id}/commands"
-    data= {"command": command, "commandType":"command"}
-    if parameter is not None:
-      data["parameter"] = parameter
-    if custom:
-      data["commandType"] = 'customize'
-    requestHelper(url, data, headers)
-
 #services
 @service
 def switchbot_refresh_devices():
@@ -186,9 +177,12 @@ fields:
           - off
         mode: list
       """
+    headers_dict=auth(**pyscript.app_config)
+    
     deviceId = extract_device_id(device)
-    headers_dict = auth(**pyscript.app_config)
-    command_execute(headers_dict, deviceId, 'setAll', parameter=f"{temperature},{mode},{fan_speed},{state}")
+    url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
+    myjson= {"command": "setAll","parameter": f"{temperature},{mode},{fan_speed},{state}","commandType": "command"}
+    requestHelper(url,myjson,headers_dict)
 
 @service
 def switchbot_turn_on(device=None):
@@ -208,8 +202,10 @@ fields:
         domain: switch
     """
     deviceId = extract_device_id(device)
-    headers_dict = auth(**pyscript.app_config)
-    command_execute(headers_dict, deviceId, "turnOn")
+    headers_dict=auth(**pyscript.app_config)
+    url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
+    myjson= {"command": "turnOn", "commandType": "command"}
+    requestHelper(url,myjson,headers_dict)
 
 @service
 def switchbot_turn_off(device=None):
@@ -229,7 +225,9 @@ fields:
     """
     deviceId = extract_device_id(device)
     headers_dict=auth(**pyscript.app_config)
-    command_execute(headers_dict, deviceId, "turnOff")
+    url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
+    myjson= {"command": "turnOff", "commandType": "command"}
+    requestHelper(url,myjson,headers_dict)
 
 
 @service
@@ -280,5 +278,11 @@ fields:
 
       """
     deviceId = extract_device_id(device)
-    headers_dict = auth(**pyscript.app_config)
-    command_execute(headers_dict, deviceId, command, parameter=parameter, custom=(commandType=='custom'))
+    headers_dict=auth(**pyscript.app_config)
+        
+    url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
+    myjson= {"command": command, "commandType": commandType}
+    if parameter is not None:
+      myjson["parameter"] = parameter
+
+    requestHelper(url,myjson,headers_dict)
