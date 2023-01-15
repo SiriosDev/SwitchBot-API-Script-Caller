@@ -73,7 +73,7 @@ def extract_device_id(device, _recursived=0):
     else:
       msg=f'Warning: impossible to find {device}. [pyscript SwitchBot]'
       service.call('notify', 'persistent_notification', message=msg)
-      service.call('notify', 'notify', message=msg)
+      #service.call('notify', 'notify', message=msg)
       return None
 
 
