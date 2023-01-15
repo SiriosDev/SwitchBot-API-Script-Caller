@@ -191,6 +191,40 @@ fields:
     command_execute(headers_dict, deviceId, 'setAll', parameter=f"{temperature},{mode},{fan_speed},{state}")
 
 @service
+def switchbot_ir_light_control(device=None, command=None):
+    """yaml
+name: SwitchBot IR light control
+description: Send command via infrared to light device.
+fields:
+  device:
+    name: Device
+    description: Target device
+    example: switch.switchbot_remote_light
+    default:
+    required: true
+    selector:
+      entity:
+        domain: switch
+  command:
+    name: Command
+    description: the name of the command
+    example: turnOff
+    default: 
+    required: true
+    selector:
+      select:
+        options:
+          - turnOn
+          - turnOff
+          - brightnessUp
+          - brightnessDown
+        mode: dropdown
+    """
+    device_id = extract_device_id(device)
+    headers = auth(**pyscript.app_config)
+    command_execute(headers, device_id, command)
+
+@service
 def switchbot_turn_on(device=None):
 
     """yaml
