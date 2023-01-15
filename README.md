@@ -89,6 +89,7 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot Turn ON (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
 - [SwitchBot Turn OFF (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
 - [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
+- [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-hvac-api-interface)
 - [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
 
 ### 🔸SwitchBot Refresh Devices
@@ -128,6 +129,16 @@ _Interface for infrared HVAC (heating, ventilation and air conditioning) device.
     - int value between `1` (auto), `2` (low), `3` (medium), `4` (high)
 - `state:`
     - string value between `on` and `off`
+
+
+### 🔸SwitchBot IR Light Control
+_Interface for infrared Light (turnOn, turnOff, brightnessUp and brightnessDown) device._
+
+**Parameters:**
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
+- `command:`
+    - string value between `turnOn`, `turnOff`, `brightnessUp` and `brightnessDown`
 
 
 ### 🔸SwitchBot Generic Command API Interface
