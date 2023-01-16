@@ -28,7 +28,7 @@ def auth(token=None, secret=None, nonce=None):
 def gen_icon(dev):
   '''Generate icon based on device type. Default to a remote icon.'''
   ico = 'remote'
-  icons = {'Projector': 'projector', 'Light': 'lightbulb-on', 'TV':'television', 'Fan':'fan'}
+  icons = {'Projector': 'projector', 'Light': 'lightbulb-on', 'TV':'television', 'Fan':'fan', 'Air Conditioner': 'air-conditioner'}
   typ = dev.get(KEY_DEV_TYPE)
   if typ in icons:
     ico = icons[typ]
@@ -58,7 +58,7 @@ def gen_dev_name(dev):
   name = ['Switchbot']
   if (dev.get(KEY_DEV_NAME) is not None):
     name.append(dev.get(KEY_DEV_NAME))
-  name.append(f"[IR {dev.get(KEY_DEV_TYPE)}]")
+  #name.append(f"[IR {dev.get(KEY_DEV_TYPE)}]")
   return ' '.join(name)
 
 def extract_device_id(device, _recursived=0):
@@ -73,7 +73,7 @@ def extract_device_id(device, _recursived=0):
     else:
       msg=f'Warning: impossible to find {device}. [pyscript SwitchBot]'
       service.call('notify', 'persistent_notification', message=msg)
-      service.call('notify', 'notify', message=msg)
+      #service.call('notify', 'notify', message=msg)
       return None
 
 
@@ -86,12 +86,21 @@ def requestHelper(_url,_json,_headers):
 def requestGetHelper(_url,_json,_headers):
     return requests.get(_url,json = _json, headers=_headers)
 
+def command_execute(headers, device_id, command, parameter=None, custom=False):
+    url=f"https://api.switch-bot.com/v1.1/devices/{device_id}/commands"
+    data= {"command": command, "commandType":"command"}
+    if parameter is not None:
+      data["parameter"] = parameter
+    if custom:
+      data["commandType"] = 'customize'
+    requestHelper(url, data, headers)
+
 #services
 @service
 def switchbot_refresh_devices():
     """yaml
 name: SwitchBot refresh devices
-description: This pyscript list registered devices in the "Switchbot Mini Hub". The devices are saved as "switch.switchbot_remote_<deviceName>" in Home Assistant and can be used for other commands.
+description: This service list registered (infrared) devices in the "Switchbot Hubs". The devices are saved as "switch.switchbot_remote_<deviceName>" in Home Assistant and can be used for other commands.
 fields:
       """
     headers_dict=auth(**pyscript.app_config)
@@ -111,8 +120,8 @@ fields:
 @service
 def switchbot_hvac(device, temperature, mode, fan_speed, state):
     """yaml
-name: SwitchBot HVAC API Interface
-description: This (py)script allows you to control HVAC "saved" in "Switchbot Mini Hub" (or other switchbot brand ir blasters !! not yet tested !!).
+name: SwitchBot IR HVAC Control
+description: Control IR HVAC "saved" in "Switchbot Hubs"
 fields:
   device:
     name: Device
@@ -177,12 +186,57 @@ fields:
           - off
         mode: list
       """
-    headers_dict=auth(**pyscript.app_config)
-    
     deviceId = extract_device_id(device)
-    url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
-    myjson= {"command": "setAll","parameter": f"{temperature},{mode},{fan_speed},{state}","commandType": "command"}
-    requestHelper(url,myjson,headers_dict)
+    headers_dict = auth(**pyscript.app_config)
+    command_execute(headers_dict, deviceId, 'setAll', parameter=f"{temperature},{mode},{fan_speed},{state}")
+
+@service
+def switchbot_ir_light_control(device=None, command=None, steps=None):
+    """yaml
+name: SwitchBot IR Light Control
+description: Control IR Light "saved" in "Switchbot Hubs"
+fields:
+  device:
+    name: Device
+    description: Target device
+    example: switch.switchbot_remote_light
+    default:
+    required: true
+    selector:
+      entity:
+        domain: switch
+  command:
+    name: Command
+    description: Select a Command
+    example: turnOff
+    default: 
+    required: true
+    selector:
+      select:
+        options:
+          - turnOn
+          - turnOff
+          - brightnessUp
+          - brightnessDown
+        mode: list
+  steps:
+    name: Steps
+    description: How many times to run the command (default 1), only works with brightnessUp/Down
+    example: turnOff
+    default: 1
+    required: false
+    selector:
+      number:
+        min: 1
+        max: 10
+        mode: box
+    """
+    if steps == None or command == "turnOn" or command== "turnOff":
+      steps=1
+    for i in range(steps):
+      device_id = extract_device_id(device)
+      headers = auth(**pyscript.app_config)
+      command_execute(headers, device_id, command)
 
 @service
 def switchbot_turn_on(device=None):
@@ -202,10 +256,8 @@ fields:
         domain: switch
     """
     deviceId = extract_device_id(device)
-    headers_dict=auth(**pyscript.app_config)
-    url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
-    myjson= {"command": "turnOn", "commandType": "command"}
-    requestHelper(url,myjson,headers_dict)
+    headers_dict = auth(**pyscript.app_config)
+    command_execute(headers_dict, deviceId, "turnOn")
 
 @service
 def switchbot_turn_off(device=None):
@@ -225,16 +277,14 @@ fields:
     """
     deviceId = extract_device_id(device)
     headers_dict=auth(**pyscript.app_config)
-    url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
-    myjson= {"command": "turnOff", "commandType": "command"}
-    requestHelper(url,myjson,headers_dict)
+    command_execute(headers_dict, deviceId, "turnOff")
 
 
 @service
 def switchbot_generic_command(device=None, command=None, parameter=None, commandType=None):
     """yaml
-name: SwitchBot Generic Command API Interface
-description: This (py)script allows you to control all device in your "Switchbot Home" (refer to https://github.com/OpenWonderLabs/SwitchBotAPI)
+name: SwitchBot Generic Command
+description: Control Switchbot Device through custom command(refer to https://github.com/OpenWonderLabs/SwitchBotAPI)
 fields:
   device:
     name: Device
@@ -278,11 +328,6 @@ fields:
 
       """
     deviceId = extract_device_id(device)
-    headers_dict=auth(**pyscript.app_config)
-        
-    url=f"https://api.switch-bot.com/v1.1/devices/{deviceId}/commands"
-    myjson= {"command": command, "commandType": commandType}
-    if parameter is not None:
-      myjson["parameter"] = parameter
-
-    requestHelper(url,myjson,headers_dict)
+    headers_dict = auth(**pyscript.app_config)
+    command_execute(headers_dict, deviceId, command, parameter=parameter, custom=(commandType=='custom'))
+    
