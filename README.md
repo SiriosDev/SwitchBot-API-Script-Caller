@@ -14,6 +14,7 @@ For more info click [here][switchbot-api-repo]
     - [Turn On](#switchbot-turn-on)
     - [Turn Off](#switchbot-turn-off)
     - [HVAC](#switchbot-hvac-api-interface)
+    - [Light](#switchbot-ir-light-control)
     - [Generic Command](#switchbot-generic-command-api-interface)
 - [Work in Progress](#work-in-progress)
 - [Changelog](#changelog)
@@ -90,7 +91,7 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot Turn ON (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
 - [SwitchBot Turn OFF (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
 - [SwitchBot IR HVAC Control (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
-- [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-hvac-api-interface)
+- [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-ir-light-control)
 - [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
 
 ### 🔸SwitchBot Refresh Devices
