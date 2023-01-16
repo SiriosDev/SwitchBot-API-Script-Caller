@@ -177,6 +177,8 @@ For any problems open an Issue, (soon I will insert a template for that).
 
 **Removed notifications to all channels in case of errors during `Refresh Devices`**.
 
+**Now HVAC will have a dedicated icon once the dummy switch is created (`Refresh Devices`)**.
+
 **Renamed `SwitchBot HVAC API Interface` in `SwitchBot IR HVAC Control`**: _it doesn't affect function it's just a visual thing_.
 
 **Renamed `SwitchBot Generic Command API Interface` in `SwitchBot Generic Command`**: _it doesn't affect function it's just a visual thing_.
