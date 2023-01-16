@@ -1,4 +1,5 @@
 [![License][licensing-shield]](LICENSE)
+All rights to the [API][switchbot-api-repo] belong to [OpenWonderLabs][OpenWonderLabs-lnk].
 
 # SwitchBot API Script Caller (v 0.2.0)
 
@@ -161,9 +162,6 @@ _Allows you to send any request to the API. (See [documentation][generic-cmd-lin
 
 ## Work in Progress
 The script works fine, but everything is still WIP, including this file.
-
-All rights to the [API][switchbot-api-repo] belong to [OpenWonderLabs][OpenWonderLabs-lnk].
-
 For any problems open an Issue, (soon I will insert a template for that).
 
 
