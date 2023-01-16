@@ -2,7 +2,7 @@
 
 # SwitchBot API Script Caller (v 0.2.0)
 
-SwitchBot API (Ver. 1.1) Script Caller, using pyscript for the scripting.
+This (Py)Script allows you to control all (WIP) your SwitchBot devices via API calls (1.1).
 
 For more info click [here][switchbot-api-repo]
 
