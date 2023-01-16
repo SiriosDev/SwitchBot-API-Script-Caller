@@ -283,7 +283,7 @@ fields:
 @service
 def switchbot_generic_command(device=None, command=None, parameter=None, commandType=None):
     """yaml
-name: SwitchBot Generic Command API Interface
+name: SwitchBot Generic Command
 description: Control Switchbot Device through custom command(refer to https://github.com/OpenWonderLabs/SwitchBotAPI)
 fields:
   device:

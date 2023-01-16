@@ -88,9 +88,9 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot Refresh Devices (`pyscript.switchbot_refresh_devices`)](#switchbot-refresh-devices)
 - [SwitchBot Turn ON (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
 - [SwitchBot Turn OFF (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
-- [SwitchBot HVAC API Interface (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
+- [SwitchBot IR HVAC Control (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
 - [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-hvac-api-interface)
-- [SwitchBot Generic Command API Interface (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
+- [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
 
 ### 🔸SwitchBot Refresh Devices
 _Create Home Assistant `switch` entity for each IR Device connected with your SwitchBot Hubs. Devices are stored as `switch.switchbot_remote_<device_name>`._  
@@ -99,7 +99,7 @@ _if `<device_name>` doesn't contains Alphanum characters (e.g is written in anot
 _The entities can then be used for sending commands using other functions of this pyscript. ⚠️ Not working stand alone ⚠️_
 _In case the device doesn't exist in the future, you will be notified on your devices._
 
-Parameters: None
+Parameters: ***None***
 
 ### 🔸SwitchBot Turn On
 _Turn a device ON_
@@ -115,7 +115,7 @@ Parameters:
 - `device`
     - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 
-### 🔸SwitchBot HVAC API Interface
+### 🔸SwitchBot IR HVAC Control
 _Interface for infrared HVAC (heating, ventilation and air conditioning) device._
 
 **Parameters:**
@@ -139,9 +139,11 @@ _Interface for infrared Light (turnOn, turnOff, brightnessUp and brightnessDown)
     - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 - `command:`
     - string value between `turnOn`, `turnOff`, `brightnessUp` and `brightnessDown`
+- `steps:`
+    - int value from `1` to `10`, _only works with `brightnessUp/Down`_, iterates the command as many times as selected.
 
 
-### 🔸SwitchBot Generic Command API Interface
+### 🔸SwitchBot Generic Command
 _Allows you to send any request to the API. (See [documentation][generic-cmd-link])_
 
 **Parameters:**
@@ -166,8 +168,18 @@ For any problems open an Issue, (soon I will insert a template for that).
 
 
 ## Changelog
-### 2023.01.15 v0.2.0 (🟢 New Feature)
+### 2023.01.16 v0.2.0 (🟢 New Features and 🛠️ some fixes)
 **Add service `SwitchBot IR Light Control`** : Send command via infrared to light device.
+
+**Corrected some descriptions**.
+
+**Reworked the way `Refresh Devices` assigns `Friendly Names`**.
+
+**Removed notifications to all channels in case of errors during `Refresh Devices`**.
+
+**Renamed `SwitchBot HVAC API Interface` in `SwitchBot IR HVAC Control`**: _it doesn't affect function it's just a visual thing_.
+
+**Renamed `SwitchBot Generic Command API Interface` in `SwitchBot Generic Command`**: _it doesn't affect function it's just a visual thing_.
 
 
 ### 2023.01.14 v0.1.0 (⚠️ Breaking changes)
@@ -187,6 +199,11 @@ Make sure to run `SwitchBot Refresh Devices` before configuring anything else.
 
 The `turn<On/Off>` services allow you to switch On and Off your device with a simple command requiring only the deviceId.
 Almost all devices are compatible with this command according to the API documentation.
+
+### Before (🟢 2 New Features)
+**Add Service `SwitchBot HVAC API Interface`**  
+**Add Service `SwitchBot Generic Command API Interface`**
+
 
 [licensing-shield]: https://img.shields.io/github/license/SiriosDev/SwitchBot-API-Script-Caller?style=flat-square
 [hacs-docs]: https://hacs.xyz/docs/setup/prerequisites
