@@ -5,7 +5,7 @@ All rights to the [API][switchbot-api-repo] belong to [OpenWonderLabs][OpenWonde
 
 This (Py)Script allows you to control all (WIP) your SwitchBot devices via API calls (1.1).
 
-‼️‼️At the moment we have implemented all the devices that we can test, so if you want to be a tester please open an [issue](/issues/new) with "test" in the title or if you are also able to develop go ahead and do a [PR](/pulls)‼️‼️
+‼️‼️At the moment we have implemented all the devices that we can test, so if you want to be a tester please open an [issue][issues] with "test" in the title or if you are also able to develop go ahead and do a [PR][pr]‼️‼️
 
 For more info click [here][switchbot-api-repo]
 
@@ -215,3 +215,5 @@ Almost all devices are compatible with this command according to the API documen
 [OpenWonderLabs-lnk]: https://github.com/OpenWonderLabs
 [generic-cmd-link]: https://github.com/OpenWonderLabs/SwitchBotAPI#send-device-control-commands
 [deviceid-link]: https://github.com/OpenWonderLabs/SwitchBotAPI#get-device-list
+[issues]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/issues/new
+[pr]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/pulls
