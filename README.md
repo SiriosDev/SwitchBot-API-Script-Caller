@@ -107,8 +107,8 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot Meter Sensor Status (`pyscript.switchbot_meter_sensor_status`)](#switchbot-meter-sensor)
 
 ### 🔸SwitchBot Refresh Devices
-_Create Home Assistant `switch` entity for each IR Device and Bot connected to your SwitchBot Hub. IR devices and Bots are stored as `switch.switchbot_remote_<device_name>`._  
-_Create Home Assistant `cover` entity for each Curtain, `binary_sensor` entity for each Contact Sensor and `sensor` entity for each Meter connected to your Switchbot Hub. These devices are stored as `<entity_type>.switchbot_remote_<device_name>` eg `cover.switchbot_remote_bedroom_curtains`_
+_Creates Home Assistant `switch` entity for each IR Device and Bot connected to your SwitchBot Hub. IR devices and Bots are stored as `switch.switchbot_remote_<device_name>`._  
+_Creates Home Assistant `cover` entity for each Curtain, `binary_sensor` entity for each Contact Sensor and `sensor` entity for each Meter connected to your Switchbot Hub. These devices are stored as `<entity_type>.switchbot_remote_<device_name>` eg `cover.switchbot_remote_bedroom_curtains`_
 
 _`<device_name>` corresponds to the name of the device in the SwitchBot app._  
 _If `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
