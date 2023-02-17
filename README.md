@@ -33,7 +33,11 @@ For more info click [here][switchbot-api-repo]
    cd /config
    git clone https://github.com/SiriosDev/SwitchBot-API-Script-Caller.git
    ```
-2. **Include [`pyscript/switchbot.yaml`](./pyscript/switchbot.yaml) in your `pyscript/config.yaml` under the `switchbot` section**
+2. **Check if you have a `pyscript/config.yaml` file. If not, create one and then add the following in your main top-level configuration.yaml file.
+    ``` yaml
+    pyscript: !include pyscript/config.yaml
+    ```
+3. **Include [`pyscript/switchbot.yaml`](./pyscript/switchbot.yaml) in your `pyscript/config.yaml` under the `switchbot` section**
    ```yaml
    # /config/pyscript/config.yaml
    allow_all_imports: true
@@ -43,7 +47,7 @@ For more info click [here][switchbot-api-repo]
     switchbot: !include /config/SwitchBot-API-Script-Caller/pyscript/switchbot.yaml
    # (...)
    ```
-3. **Set the authentication secrets in `secrets.yaml` homeassistant file**
+4. **Set the authentication secrets in `secrets.yaml` homeassistant file**
     - Random Value (`switchbot_nonc`) (I suggest using an UUID generator, but any unique alphanumeric string is fine)
     ```yaml
     # secrets.yaml
@@ -54,7 +58,7 @@ For more info click [here][switchbot-api-repo]
     # Random Value: you can use a UUID generator, but any unique alphanumeric string is OK
     switchbot_nonc: xxxxxxxxxx
     ```
-4. **Link the files in the `pyscript` directory**
+5. **Link the files in the `pyscript` directory**
    ```sh
    # use `mkdir -p /config/pyscript/apps/` if the directory doesn't exist
    cd /config/pyscript/apps/
@@ -70,7 +74,7 @@ cd SwitchBot-API-Script-Caller
 git pull
 ```
 ⚠️ **See changelog before updating.**  
-The project is still in developpement and breaking changes may occurs.
+The project is still in development and breaking changes may occurs.
 
 ### Installation Notes
 - In order to see the `Developper options` in the Switchbot app (version ≥6.14), click repetively on the version number in the App's settings.
@@ -95,6 +99,9 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot IR HVAC Control (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
 - [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-ir-light-control)
 - [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
+- [SwitchBot Curtain Command (`pyscript.switchbot_curtain_command`)]
+- [SwitchBot Binary Sensor Status (`pyscript.switchbot_binary_sensor_status`)]
+- [SwitchBot Meter Sensor Status (`pyscript.switchbot_meter_sensor_status`)]
 
 ### 🔸SwitchBot Refresh Devices
 _Create Home Assistant `switch` entity for each IR Device connected with your SwitchBot Hubs. Devices are stored as `switch.switchbot_remote_<device_name>`._  
@@ -154,13 +161,30 @@ _Allows you to send any request to the API. (See [documentation][generic-cmd-lin
 - `device`
     - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 - `command:`
-    - One of the command supported by the device. (see [documentation][generic-cmd-link])
+    - One of the commands supported by the device. (see [documentation][generic-cmd-link])
 - `parameter:` (optional)
     - Parameter for the command, if required (e.g. `SetChannel`)
     - use `default` if not used
 - `commandType:`
     - `command` for standard commands
     - `customize` for custom commands
+
+### 🔸Switchbot Curtain Control
+_Interface for Curtain (turnOn, turnOff, setPosition)_
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
+- `command:`
+    - string value between `turnOn`, `turnOff`, `setPosition`
+- `parameter:` (optional)
+    - string giving the position for the setPosition command. (See the [SwitchbotAPI Curtain command][https://github.com/OpenWonderLabs/SwitchBotAPI#curtain-2].)
+    
+### 🔸Switchbot Binary Sensor (eg Contact Sensor)
+_Gets the state of a Switchbot binary sensor (on, off)_
+Runs every five minutes generating 288 API calls per sensor per day.
+
+### 🔸Switchbot Meter Sensor
+_Gets the state of a Switchbot Meter (temperature, humidity)_
+Runs every five minutes generating 288 API calls per meter per day.
 
 
 ## Work in Progress
