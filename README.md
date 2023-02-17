@@ -111,7 +111,7 @@ _Create Home Assistant `switch` entity for each IR Device and Bot connected to y
 _Create Home Assistant `cover` entity for each Curtain, `binary_sensor` entity for each Contact Sensor and `sensor` entity for each Meter connected to your Switchbot Hub. These devices are stored as `<entity_type>.switchbot_remote_<device_name>` eg `cover.switchbot_remote_bedroom_curtains`_
 
 _`<device_name>` corresponds to the name of the device in the SwitchBot app._  
-_if `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
+_If `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
 _The entities can then be used for sending commands or getting status using other functions of this pyscript. ⚠️ Not working stand alone ⚠️_
 _In case the device doesn't exist in the future, you will be notified on your devices._
 
@@ -187,9 +187,13 @@ _Interface for Curtain (turnOn, turnOff, setPosition)_
 _Gets the state of a Switchbot binary sensor (on, off)._
 Runs every five minutes generating 288 API calls per sensor per day.
 
+Parameters: ***None***
+
 ### 🔸Switchbot Meter Sensor
 _Gets the state of a Switchbot Meter (temperature, humidity)._
 Runs every five minutes generating 288 API calls per meter per day.
+
+Parameters: ***None***
 
 
 ## Work in Progress
