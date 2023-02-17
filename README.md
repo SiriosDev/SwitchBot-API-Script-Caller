@@ -18,6 +18,9 @@ For more info click [here][switchbot-api-repo]
     - [HVAC](#switchbot-hvac-api-interface)
     - [Light](#switchbot-ir-light-control)
     - [Generic Command](#switchbot-generic-command-api-interface)
+    - Switchbot Curtain Control
+    - Switchbot Binary Sensor
+    - Switchbot Meter Sensor
 - [Work in Progress](#work-in-progress)
 - [Changelog](#changelog)
 
@@ -33,7 +36,7 @@ For more info click [here][switchbot-api-repo]
    cd /config
    git clone https://github.com/SiriosDev/SwitchBot-API-Script-Caller.git
    ```
-2. **Check if you have a `pyscript/config.yaml` file. If not, create one and then add the following in your main top-level configuration.yaml file.
+2. **Check if you have a `pyscript/config.yaml` file. If not, create one and then add the following in your main top-level configuration.yaml file.**
     ``` yaml
     pyscript: !include pyscript/config.yaml
     ```
@@ -104,10 +107,11 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot Meter Sensor Status (`pyscript.switchbot_meter_sensor_status`)]
 
 ### 🔸SwitchBot Refresh Devices
-_Create Home Assistant `switch` entity for each IR Device connected with your SwitchBot Hubs. Devices are stored as `switch.switchbot_remote_<device_name>`._  
+_Create Home Assistant `switch` entity for each IR Device and Bot connected to your SwitchBot Hub. IR devices and Bots are stored as `switch.switchbot_remote_<device_name>`._  
+_Create Home Assistant `cover` entity for each Curtain, `binary_sensor` entity for each Contact Sensor and `sensor` entity for each Meter connected to your Switchbot Hub. These devices are stored as `<entity_type>.switchbot_remote_<device_name>` eg `cover.switchbot_remote_bedroom_curtains`_
 _`<device_name>` correspond to the name of the device in the SwitchBot app._  
 _if `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
-_The entities can then be used for sending commands using other functions of this pyscript. ⚠️ Not working stand alone ⚠️_
+_The entities can then be used for sending commands or getting status using other functions of this pyscript. ⚠️ Not working stand alone ⚠️_
 _In case the device doesn't exist in the future, you will be notified on your devices._
 
 Parameters: ***None***
@@ -193,6 +197,15 @@ For any problems open an Issue, (soon I will insert a template for that).
 
 
 ## Changelog
+### <Release date> v? (🟢 New Features)
+** Added support for non-IR devices** : Bot, Contact Sensor, Curtain and Meter
+
+** Add service 'Switchbot Curtains Command'** : Send command to Curtain device.
+
+** Add time trigger to get the status of binary sensors every 5 minutes.
+
+** Add times trigger to get the status of Meter every 5 minutes.
+
 ### 2023.01.16 v0.2.0 (🟢 New Features and 🛠️ some fixes)
 **Add service `SwitchBot IR Light Control`** : Send command via infrared to light device.
 
