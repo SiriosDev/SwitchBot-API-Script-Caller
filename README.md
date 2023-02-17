@@ -80,7 +80,7 @@ git pull
 The project is still in development and breaking changes may occurs.
 
 ### Installation Notes
-- In order to see the `Developper options` in the Switchbot app (version ≥6.14), click repetively on the version number in the App's settings.
+- In order to see the `Developer options` in the Switchbot app (version ≥6.14), click repetively on the version number in the App's settings.
     <details>
     <summary>Click her for detailed procedure</summary>
   
