@@ -18,9 +18,9 @@ For more info click [here][switchbot-api-repo]
     - [HVAC](#switchbot-hvac-api-interface)
     - [Light](#switchbot-ir-light-control)
     - [Generic Command](#switchbot-generic-command-api-interface)
-    - [Switchbot Curtain Control](#switchbot-curtain-control)
-    - [Switchbot Binary Sensor](#switchbot-binary-sensor-eg-contact-sensor)
-    - [Switchbot Meter Sensor](#switchbot-meter-sensor)
+    - [Curtain](#switchbot-curtain-control)
+    - [Binary Sensor](#switchbot-binary-sensor-eg-contact-sensor)
+    - [Meter](#switchbot-meter-sensor)
 - [Work in Progress](#work-in-progress)
 - [Changelog](#changelog)
 
