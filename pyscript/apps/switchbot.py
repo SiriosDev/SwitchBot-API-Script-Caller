@@ -1,5 +1,5 @@
 import time, hashlib, hmac, base64, requests
-import re, yaml, io
+import re, yaml, io, json
 
 PREFIX="switchbot_remote_"
 DOMAIN="switch"
@@ -128,10 +128,11 @@ def command_execute(headers, device_id, command, parameter=None, custom=False):
 def get_status(headers, device_id):
   url=f"https://api.switch-bot.com/v1.1/devices/{device_id}/status"
   r = requestGetHelper(url, {}, headers)
-  status = r.json()['statusCode']
+  data = r.json()
+  status = data['statusCode']
   if status == 100:
-    body = r.json()['body']
-    return body
+    log.warning(f"Status request for {device_id} returned response {data}.")
+    return data
   elif status == "n/a":
     log.warning(f"Status request for {device_id} unauthorized. Http 401 Error. User permission is denied due to invalid token.")
   elif status == 190:
@@ -434,9 +435,9 @@ def switchbot_binary_sensor_status():
     if (PREFIX in s) and ("binary_sensor" in s):
       deviceId = extract_device_id(s)
       headers_dict = auth(**pyscript.app_config)
-      statusBody = get_status(headers_dict, deviceId)
-      binary_status = statusBody.json()['openState']
-      if binary_status != None:
+      data = get_status(headers_dict, deviceId)
+      if data != None:
+        binary_status = data['body']['openState']
         state.set(s, value=binary_status)
         log.warning(f"Successfully got status of {s} which is {binary_status}")
 
@@ -445,15 +446,18 @@ def switchbot_binary_sensor_status():
 def switchbot_meter_sensor_status():
   states = state.names()
   for s in states:
-    if (PREFIX in s) and (state.getattr(s)[KEY_NON_IR_TYPE] == "Meter"):
-      deviceId = extract_device_id(s)
-      headers_dict = auth(**pyscript.app_config)
-      statusBody = get_status(headers_dict, deviceId)
-      temperature_status = statusBody.json()['temperature']
-      humidity_status = statusBody.json()['humidity']
-      if temperature_status != None:
-        state.set(s, value=temperature_status)
-        log.warning(f"Successfully got temperature status of {s} which is {temperature_status}")
-      if humidity_status != None:
-        state.set(s, new_attributes={"humdity": humidity_status})
-        log.warning(f"Successfully got humdity status of {s} which is {humidity_status}")
+    if (PREFIX in s) and ("switch" not in s):
+      stateAttribues = state.getattr(s)
+      stateType = stateAttribues[KEY_NON_IR_TYPE]
+      log.warning(f"stateType is {stateType}")
+      if (stateType == "Meter"):
+        deviceId = extract_device_id(s)
+        headers_dict = auth(**pyscript.app_config)
+        data = get_status(headers_dict, deviceId)
+        if data != None:
+          temperature_status = data['body']['temperature']
+          humidity_status = data['body']['humidity']
+          state.set(s, new_attributes={"temperature": temperature_status})
+          log.warning(f"Successfully got temperature status of {s} which is {temperature_status}")
+          state.set(s, new_attributes={"humdity": humidity_status})
+          log.warning(f"Successfully got humdity status of {s} which is {humidity_status}")
