@@ -18,9 +18,9 @@ For more info click [here][switchbot-api-repo]
     - [HVAC](#switchbot-hvac-api-interface)
     - [Light](#switchbot-ir-light-control)
     - [Generic Command](#switchbot-generic-command-api-interface)
-    - Switchbot Curtain Control
-    - Switchbot Binary Sensor
-    - Switchbot Meter Sensor
+    - [Switchbot Curtain Control](#switchbot-curtain-control)
+    - [Switchbot Binary Sensor](#switchbot-binary-sensor-eg-contact-sensor)
+    - [Switchbot Meter Sensor](#switchbot-meter-sensor)
 - [Work in Progress](#work-in-progress)
 - [Changelog](#changelog)
 
@@ -102,14 +102,15 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot IR HVAC Control (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
 - [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-ir-light-control)
 - [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
-- [SwitchBot Curtain Command (`pyscript.switchbot_curtain_command`)]
-- [SwitchBot Binary Sensor Status (`pyscript.switchbot_binary_sensor_status`)]
-- [SwitchBot Meter Sensor Status (`pyscript.switchbot_meter_sensor_status`)]
+- [SwitchBot Curtain Command (`pyscript.switchbot_curtain_command`)](#switchbot-curtain-control)
+- [SwitchBot Binary Sensor Status (`pyscript.switchbot_binary_sensor_status`)](#switchbot-binary-sensor-eg-contact-sensor)
+- [SwitchBot Meter Sensor Status (`pyscript.switchbot_meter_sensor_status`)](#switchbot-meter-sensor)
 
 ### 🔸SwitchBot Refresh Devices
 _Create Home Assistant `switch` entity for each IR Device and Bot connected to your SwitchBot Hub. IR devices and Bots are stored as `switch.switchbot_remote_<device_name>`._  
 _Create Home Assistant `cover` entity for each Curtain, `binary_sensor` entity for each Contact Sensor and `sensor` entity for each Meter connected to your Switchbot Hub. These devices are stored as `<entity_type>.switchbot_remote_<device_name>` eg `cover.switchbot_remote_bedroom_curtains`_
-_`<device_name>` correspond to the name of the device in the SwitchBot app._  
+
+_`<device_name>` corresponds to the name of the device in the SwitchBot app._  
 _if `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
 _The entities can then be used for sending commands or getting status using other functions of this pyscript. ⚠️ Not working stand alone ⚠️_
 _In case the device doesn't exist in the future, you will be notified on your devices._
@@ -180,14 +181,14 @@ _Interface for Curtain (turnOn, turnOff, setPosition)_
 - `command:`
     - string value between `turnOn`, `turnOff`, `setPosition`
 - `parameter:` (optional)
-    - string giving the position for the setPosition command. (See the [SwitchbotAPI Curtain command][https://github.com/OpenWonderLabs/SwitchBotAPI#curtain-2].)
+    - string giving the position for the setPosition command. (See the [SwitchbotAPI Curtain command]([url](https://github.com/OpenWonderLabs/SwitchBotAPI#curtain-2)).)
     
 ### 🔸Switchbot Binary Sensor (eg Contact Sensor)
-_Gets the state of a Switchbot binary sensor (on, off)_
+_Gets the state of a Switchbot binary sensor (on, off)._
 Runs every five minutes generating 288 API calls per sensor per day.
 
 ### 🔸Switchbot Meter Sensor
-_Gets the state of a Switchbot Meter (temperature, humidity)_
+_Gets the state of a Switchbot Meter (temperature, humidity)._
 Runs every five minutes generating 288 API calls per meter per day.
 
 
@@ -198,13 +199,13 @@ For any problems open an Issue, (soon I will insert a template for that).
 
 ## Changelog
 ### <Release date> v? (🟢 New Features)
-** Added support for non-IR devices** : Bot, Contact Sensor, Curtain and Meter
+**Add support for non-IR devices** : Bot, Contact Sensor, Curtain and Meter.**
 
-** Add service 'Switchbot Curtains Command'** : Send command to Curtain device.
+**Add service 'Switchbot Curtains Command'** : Send command to Curtain device.**
 
-** Add time trigger to get the status of binary sensors every 5 minutes.
+**Add time trigger to get the status of binary sensors every 5 minutes.**
 
-** Add times trigger to get the status of Meter every 5 minutes.
+**Add time trigger to get the status of Meter every 5 minutes.**
 
 ### 2023.01.16 v0.2.0 (🟢 New Features and 🛠️ some fixes)
 **Add service `SwitchBot IR Light Control`** : Send command via infrared to light device.
