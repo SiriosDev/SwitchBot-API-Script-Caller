@@ -6,6 +6,8 @@ DOMAIN="switch"
 KEY_DEV_TYPE='remoteType'
 KEY_DEV_NAME='deviceName'
 KEY_DEV_ID='deviceId'
+KEY_NON_IR_TYPE='deviceType'
+KEY_NON_IR_CLOUD='enableCloudService'
 
 # "input" from config
 def auth(token=None, secret=None, nonce=None):
@@ -34,17 +36,25 @@ def gen_icon(dev):
     ico = icons[typ]
   return 'mdi:'+ico
 
+def gen_icon(non_ir):
+  '''Generate icon based on device type. Default to a robot icon.'''
+  ico = 'robot'
+  icons = {'Curtain': 'curtains', 'Contact Sensor': 'leak', 'Meter':'thermometer', 'Hub Mini':'hubspot', 'Remote': 'remote'}
+  typ = non_ir.get(KEY_NON_IR_TYPE)
+  if typ in icons:
+    ico = icons[typ]
+  return 'mdi:'+ico
+
 def clear_existing():
   '''Clear switchbot devices which were saved to avoid zombies.'''
-  states = state.names(domain=DOMAIN)
-  prefix = f'{DOMAIN}.{PREFIX}'
+  states = state.names()
   for s in states:
-    if s[0:len(prefix)] == prefix:
+    if PREFIX in s:
       log.warning(f"deleting sensor : {s}")
       state.delete(s)
 
 def gen_dev_uid(dev:dict):
-  '''Generate a Unique ID for Switchbot devices. (devices must have unique names in switchbot app so it works)'''
+  '''Generate a Unique ID for Switchbot IR devices. (devices must have unique names in switchbot app so it works)'''
   name = dev.get(KEY_DEV_NAME)
   if name is not None:
     name = name.lower()
@@ -53,6 +63,26 @@ def gen_dev_uid(dev:dict):
       return PREFIX+name
   return PREFIX + re.sub(r'[^0-9a-z]+', '_', str(dev.get(KEY_DEV_TYPE)).lower())+'_'+str(dev.get(KEY_DEV_ID)[-4:])
 
+def gen_non_ir_uid(non_ir:dict):
+  '''Generate a Unique ID for Switchbot non-IR devices. (devices must have unique names in switchbot app so it works)'''
+  name = non_ir.get(KEY_DEV_NAME)
+  domain = convert_switchbot_type_to_ha_domain(non_ir.get(KEY_NON_IR_TYPE))
+  if name is not None:
+    name = name.lower()
+    name = re.sub(r'[^0-9a-z]+', '_', name)
+    if name not in ['_', '']:
+      return domain + '.' + PREFIX + name
+  return domain + '.' + PREFIX + re.sub(r'[^0-9a-z]+', '_', str(non_ir.get(KEY_NON_IR_TYPE)).lower())+'_'+str(non_ir.get(KEY_DEV_ID)[-4:])
+
+def convert_switchbot_type_to_ha_domain(type):
+  if type == 'Curtain':
+    return 'cover'
+  elif type == 'Contact Sensor':
+    return 'binary_sensor'
+  elif type == 'Meter':
+    return 'sensor'
+  else:
+    return 'switch'
 
 def gen_dev_name(dev):
   name = ['Switchbot']
@@ -95,12 +125,25 @@ def command_execute(headers, device_id, command, parameter=None, custom=False):
       data["commandType"] = 'customize'
     requestHelper(url, data, headers)
 
+def get_status(headers, device_id):
+  url=f"https://api.switch-bot.com/v1.1/devices/{device_id}/status"
+  r = requestGetHelper(url, {}, headers)
+  status = r.json()['statusCode']
+  if status == 100:
+    body = r.json()['body']
+    return body
+  elif status == "n/a":
+    log.warning(f"Status request for {device_id} unauthorized. Http 401 Error. User permission is denied due to invalid token.")
+  elif status == 190:
+    log.warning(f"Status request for {device_id}. System error. Device internal error due to device states not synchronized with server.")
+  return None
+
 #services
 @service
 def switchbot_refresh_devices():
     """yaml
 name: SwitchBot refresh devices
-description: This service list registered (infrared) devices in the "Switchbot Hubs". The devices are saved as "switch.switchbot_remote_<deviceName>" in Home Assistant and can be used for other commands.
+description: This service list registered devices in the "Switchbot Hubs". Devices are saved as "switch.switchbot_remote_<deviceName>" or similar in Home Assistant.
 fields:
       """
     headers_dict=auth(**pyscript.app_config)
@@ -108,7 +151,8 @@ fields:
     r = requestGetHelper(url, {}, headers_dict)
     log.info(str(r.json()))
     infrared = r.json()['body'].get("infraredRemoteList")
-    if infrared is None:
+    non_infrared = r.json()['body'].get("deviceList")
+    if infrared and non_infrared is None:
       return None
     clear_existing()
     for dev in infrared:
@@ -116,6 +160,12 @@ fields:
         dev['friendly_name'] = gen_dev_name(dev)
         dev['icon'] = gen_icon(dev)
         state.set(f'{DOMAIN}.{gen_dev_uid(dev)}', value=dev.get(KEY_DEV_ID), new_attributes=dev )
+    for non_ir in non_infrared:
+      if non_ir.get(KEY_NON_IR_CLOUD): # Only load devices that are cloud-connected.
+        log.warning(f"Adding Switchbot Device {non_ir.get(KEY_DEV_NAME)} [{non_ir.get(KEY_NON_IR_TYPE)}] -> {non_ir.get(KEY_DEV_ID)}")
+        non_ir['friendly_name'] = gen_dev_name(non_ir)
+        non_ir['icon'] = gen_icon(non_ir)
+        state.set(f'{gen_non_ir_uid(non_ir)}', value=non_ir.get(KEY_DEV_ID), new_attributes=non_ir)
 
 @service
 def switchbot_hvac(device, temperature, mode, fan_speed, state):
@@ -330,4 +380,80 @@ fields:
     deviceId = extract_device_id(device)
     headers_dict = auth(**pyscript.app_config)
     command_execute(headers_dict, deviceId, command, parameter=parameter, custom=(commandType=='custom'))
-    
+
+
+# Switchbot curtains commands.
+@service
+def switchbot_curtain_command(device=None, command=None, parameter=None):
+    """yaml
+name: SwitchBot Curtain Command
+description: Control Switchbot curtain.
+fields:
+  device:
+    name: Device
+    description: the name of the device as in the SwitchBot app
+    example: cover.switchbot_remote_bedroom_curtains
+    default:
+    required: true
+    selector:
+      entity:
+        domain: cover
+
+  command:
+    name: Command
+    description: the name of the command
+    example: turnOff
+    default: 
+    required: true
+    selector:
+      text:
+
+  parameter:
+    name: Parameters
+    description: some commands require parameters, such as Position
+    example: 
+    default: 
+    required: false
+    selector:
+      select:
+        options:
+          - turnOn
+          - turnOff
+          - setPosition
+        mode: list
+    """
+    deviceId = extract_device_id(device)
+    headers_dict = auth(**pyscript.app_config)
+    command_execute(headers_dict, deviceId, command, parameter=parameter)
+
+# Switchbot binary sensor gets status every 5 minutes (288 API calls / sensor / day).
+@time_trigger("period(0:00, 300 sec)")
+def switchbot_binary_sensor_status():
+  states = state.names()
+  for s in states:
+    if (PREFIX in s) and ("binary_sensor" in s):
+      deviceId = extract_device_id(s)
+      headers_dict = auth(**pyscript.app_config)
+      statusBody = get_status(headers_dict, deviceId)
+      binary_status = statusBody.json()['openState']
+      if binary_status != None:
+        state.set(s, value=binary_status)
+        log.warning(f"Successfully got status of {s} which is {binary_status}")
+
+# Switchbot meter sensor gets status every 5 minutes (288 API calls / sensor / day).
+@time_trigger("period(0:01, 300 sec)")
+def switchbot_meter_sensor_status():
+  states = state.names()
+  for s in states:
+    if (PREFIX in s) and (state.getattr(s)[KEY_NON_IR_TYPE] == "Meter"):
+      deviceId = extract_device_id(s)
+      headers_dict = auth(**pyscript.app_config)
+      statusBody = get_status(headers_dict, deviceId)
+      temperature_status = statusBody.json()['temperature']
+      humidity_status = statusBody.json()['humidity']
+      if temperature_status != None:
+        state.set(s, value=temperature_status)
+        log.warning(f"Successfully got temperature status of {s} which is {temperature_status}")
+      if humidity_status != None:
+        state.set(s, new_attributes={"humdity": humidity_status})
+        log.warning(f"Successfully got humdity status of {s} which is {humidity_status}")
