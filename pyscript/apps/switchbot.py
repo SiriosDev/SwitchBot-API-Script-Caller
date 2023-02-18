@@ -1,5 +1,5 @@
 import time, hashlib, hmac, base64, requests
-import re, yaml, io, json
+import re, yaml, io
 
 PREFIX="switchbot_remote_"
 DOMAIN="switch"
@@ -427,37 +427,60 @@ fields:
     headers_dict = auth(**pyscript.app_config)
     command_execute(headers_dict, deviceId, command, parameter=parameter)
 
-# Switchbot binary sensor gets status every 5 minutes (288 API calls / sensor / day).
-@time_trigger("period(0:00, 300 sec)")
-def switchbot_binary_sensor_status():
+# Returns true if there exist states that require status checking.
+def is_status_entites:
   states = state.names()
   for s in states:
-    if (PREFIX in s) and ("binary_sensor" in s):
-      deviceId = extract_device_id(s)
-      headers_dict = auth(**pyscript.app_config)
-      data = get_status(headers_dict, deviceId)
-      if data != None:
-        binary_status = data['body']['openState']
-        state.set(s, value=binary_status)
-        log.warning(f"Successfully got status of {s} which is {binary_status}")
-
-# Switchbot meter sensor gets status every 5 minutes (288 API calls / sensor / day).
-@time_trigger("period(0:01, 300 sec)")
-def switchbot_meter_sensor_status():
-  states = state.names()
-  for s in states:
-    if (PREFIX in s) and ("switch" not in s):
-      stateAttribues = state.getattr(s)
+    if (PREFIX in s):
       stateType = stateAttribues[KEY_NON_IR_TYPE]
-      log.warning(f"stateType is {stateType}")
-      if (stateType == "Meter"):
-        deviceId = extract_device_id(s)
-        headers_dict = auth(**pyscript.app_config)
-        data = get_status(headers_dict, deviceId)
-        if data != None:
-          temperature_status = data['body']['temperature']
-          humidity_status = data['body']['humidity']
-          state.set(s, new_attributes={"temperature": temperature_status})
-          log.warning(f"Successfully got temperature status of {s} which is {temperature_status}")
-          state.set(s, new_attributes={"humdity": humidity_status})
-          log.warning(f"Successfully got humdity status of {s} which is {humidity_status}")
+      if (stateType == "Contact Sensor") or (stateType == "Curtain") or (stateType == "Meter"):
+        return True
+  return False
+
+# Status requests got every 5 minutes (288 API calls / device / day).
+@time_trigger("period(0:00, 300 sec)")
+@state_active("pyscript.is_status_entites")
+def switchbot_time_trigger():
+  states = state.names()
+  for s in states:
+    if (PREFIX in s):
+      stateType = stateAttribues[KEY_NON_IR_TYPE]
+      if stateType == "Contact Sensor":
+        get_binary_sensor_state(s)
+      elif stateType == "Curtain":
+        get_curtain_status(s)
+      elif stateType == "Meter":
+        get_meter_status(s)
+
+# Get status of Switchbot binary sensor.
+def switchbot_binary_sensor_status(device=None):
+  deviceId = extract_device_id(device)
+  headers_dict = auth(**pyscript.app_config)
+  data = get_status(headers_dict, deviceId)
+  if data != None:
+    binary_status = data['body']['openState']
+    state.set(device, value=binary_status)
+    log.warning(f"Successfully got status of {device} which is {binary_status}")
+
+# Get status of Switchbot Curtain.
+def switchbot_curtain_status(device=None):
+  deviceId = extract_device_id(device)
+  headers_dict = auth(**pyscript.app_config)
+  data = get_status(headers_dict, deviceId)
+  if data != None:
+    position = data['body']['slidePosition']
+    state.set(device, value=position)
+    log.warning(f"Successfully got status of {device} which is {position}")
+
+# Get status of Switchbot Meter.
+def switchbot_meter_status(device=None):
+    deviceId = extract_device_id(device)
+    headers_dict = auth(**pyscript.app_config)
+    data = get_status(headers_dict, deviceId)
+    if data != None:
+      temperature_status = data['body']['temperature']
+      humidity_status = data['body']['humidity']
+      state.set(device, new_attributes={"temperature": temperature_status})
+      log.warning(f"Successfully got temperature status of {device} which is {temperature_status}")
+      state.set(s, new_attributes={"humdity": humidity_status})
+      log.warning(f"Successfully got humdity status of {device} which is {humidity_status}")
