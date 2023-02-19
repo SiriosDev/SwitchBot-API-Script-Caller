@@ -31,7 +31,7 @@ For more info click [here][switchbot-api-repo]
 <details>
 <summary>Versions</summary>
 
-- Unnumbered (2023.01.14)
+- [Unnumbered (2023.01.14)][unnum]
 
 </details> 
 
@@ -227,3 +227,4 @@ Make sure to run `SwitchBot Refresh Devices` before configuring anything else.
 [pr]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/pulls
 [Changelog]: CHANGELOG.md
 [i15]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/issues/15
+[unnum]: #20230114-v010-%EF%B8%8F-breaking-changes
