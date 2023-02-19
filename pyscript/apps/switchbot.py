@@ -120,7 +120,7 @@ def create_non_ir_entities(devices):
       non_ir['friendly_name'] = gen_dev_name(non_ir)
       non_ir['icon'] = gen_icon(non_ir)
       state.set(f'{gen_non_ir_uid(non_ir)}', value=non_ir.get(KEY_DEV_ID), new_attributes=non_ir)
-  switchbot_time_trigger() # Get an initial status for sensor-like devices.
+  switchbot_get_status() # Get an initial status for sensor-like devices.
 
 
 @pyscript_executor
@@ -435,7 +435,7 @@ fields:
 # Status checking
 # Status requests got every 5 minutes (288 API calls / device / day).
 @time_trigger("period(0:00, 300 sec)")
-def switchbot_time_trigger():
+def switchbot_get_status():
   states = state.names()
   for s in states:
     if (PREFIX in s):
