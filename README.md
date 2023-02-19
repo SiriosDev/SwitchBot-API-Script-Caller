@@ -15,9 +15,9 @@ For more info click [here][switchbot-api-repo]
     - [Refresh Devices](#switchbot-refresh-devices)
     - [Turn On](#switchbot-turn-on)
     - [Turn Off](#switchbot-turn-off)
-    - [HVAC](#switchbot-hvac-api-interface)
+    - [HVAC](#switchbot-ir-hvac-control)
     - [Light](#switchbot-ir-light-control)
-    - [Generic Command](#switchbot-generic-command-api-interface)
+    - [Generic Command](#switchbot-generic-command)
 - [Work in Progress](#work-in-progress)
 - [Changelog](#changelog)
 
