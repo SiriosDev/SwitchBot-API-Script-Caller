@@ -1,7 +1,7 @@
 # Changelog
 ## 2023.02.19 v0.2.1 (🛠️ Some Fixes)
 
-**Fixed (#15) `commandType` parameters in `Generic Command`**.<br>
+**Fixed ([#15][i15]) `commandType` parameters in `Generic Command`**.<br>
 *Suggest updating if you need to control custom remotes created in the mobile app*.
 
 
@@ -45,3 +45,6 @@ Almost all devices are compatible with this command according to the API documen
 ## Before (🟢 2 New Features)
 **Add Service `SwitchBot HVAC API Interface`**  
 **Add Service `SwitchBot Generic Command API Interface`**
+
+
+[i15]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/issues/15
