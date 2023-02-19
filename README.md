@@ -1,7 +1,7 @@
 [![License][licensing-shield]](LICENSE)
 All rights to the [API][switchbot-api-repo] belong to [OpenWonderLabs][OpenWonderLabs-lnk].
 
-# SwitchBot API Script Caller (v 0.2.0)
+# SwitchBot API Script Caller (v 0.2.1)
 
 This (Py)Script allows you to control all (WIP) your SwitchBot devices via API calls (1.1).
 
@@ -179,7 +179,7 @@ For any problems open an Issue, (soon I will insert a template for that).
 ## Changelog
 ### 2023.02.19 v0.2.1 (🛠️ Some Fixes)
 
-**Fixed (#15) `commandType` parameters in `Generic Command`**.<br>
+**Fixed ([#15][i15]) `commandType` parameters in `Generic Command`**.<br>
 *Suggest updating if you need to control custom remotes created in the mobile app*.
 
 
@@ -226,3 +226,4 @@ Make sure to run `SwitchBot Refresh Devices` before configuring anything else.
 [issues]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/issues/new
 [pr]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/pulls
 [Changelog]: CHANGELOG.md
+[i15]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/issues/15
