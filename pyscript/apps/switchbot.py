@@ -39,7 +39,7 @@ def gen_icon(dev):
 def gen_icon(non_ir):
   '''Generate icon based on device type. Default to a robot icon.'''
   ico = 'robot'
-  icons = {'Curtain': 'curtains', 'Contact Sensor': 'leak', 'Meter':'thermometer'}
+  icons = {'Curtain': 'curtains', 'Contact Sensor': 'leak', 'Meter': 'thermometer'}
   typ = non_ir.get(KEY_NON_IR_TYPE)
   if typ in icons:
     ico = icons[typ]
@@ -106,6 +106,21 @@ def extract_device_id(device, _recursived=0):
       #service.call('notify', 'notify', message=msg)
       return None
 
+def create_ir_entities(devices):
+  for dev in devices:
+    log.warning(f"Adding Switchbot Device {dev.get(KEY_DEV_NAME)} [{dev.get(KEY_DEV_TYPE)}] -> {dev.get(KEY_DEV_ID)}")
+    dev['friendly_name'] = gen_dev_name(dev)
+    dev['icon'] = gen_icon(dev)
+    state.set(f'{DOMAIN}.{gen_dev_uid(dev)}', value=dev.get(KEY_DEV_ID), new_attributes=dev )
+
+def create_non_ir_entities(devices):
+  for non_ir in devices:
+    if non_ir.get(KEY_NON_IR_CLOUD): # Only load devices that are cloud-connected.
+      log.warning(f"Adding Switchbot Device {non_ir.get(KEY_DEV_NAME)} [{non_ir.get(KEY_NON_IR_TYPE)}] -> {non_ir.get(KEY_DEV_ID)}")
+      non_ir['friendly_name'] = gen_dev_name(non_ir)
+      non_ir['icon'] = gen_icon(non_ir)
+      state.set(f'{gen_non_ir_uid(non_ir)}', value=non_ir.get(KEY_DEV_ID), new_attributes=non_ir)
+  switchbot_time_trigger() # Get an initial status for sensor-like devices.
 
 
 @pyscript_executor
@@ -131,7 +146,6 @@ def get_status(headers, device_id):
   data = r.json()
   status = data['statusCode']
   if status == 100:
-    log.warning(f"Status request for {device_id} returned response {data}.")
     return data
   elif status == "n/a":
     log.warning(f"Status request for {device_id} unauthorized. Http 401 Error. User permission is denied due to invalid token.")
@@ -140,8 +154,8 @@ def get_status(headers, device_id):
   return None
 
 #services
-@time_trigger("startup")
 @service
+@time_trigger("startup")
 def switchbot_refresh_devices():
     """yaml
 name: SwitchBot refresh devices
@@ -157,17 +171,8 @@ fields:
     if infrared and non_infrared is None:
       return None
     clear_existing()
-    for dev in infrared:
-        log.warning(f"Adding Switchbot Device {dev.get(KEY_DEV_NAME)} [{dev.get(KEY_DEV_TYPE)}] -> {dev.get(KEY_DEV_ID)}")
-        dev['friendly_name'] = gen_dev_name(dev)
-        dev['icon'] = gen_icon(dev)
-        state.set(f'{DOMAIN}.{gen_dev_uid(dev)}', value=dev.get(KEY_DEV_ID), new_attributes=dev )
-    for non_ir in non_infrared:
-      if non_ir.get(KEY_NON_IR_CLOUD): # Only load devices that are cloud-connected.
-        log.warning(f"Adding Switchbot Device {non_ir.get(KEY_DEV_NAME)} [{non_ir.get(KEY_NON_IR_TYPE)}] -> {non_ir.get(KEY_DEV_ID)}")
-        non_ir['friendly_name'] = gen_dev_name(non_ir)
-        non_ir['icon'] = gen_icon(non_ir)
-        state.set(f'{gen_non_ir_uid(non_ir)}', value=non_ir.get(KEY_DEV_ID), new_attributes=non_ir)
+    create_ir_entities(infrared)
+    create_non_ir_entities(non_infrared)
 
 @service
 def switchbot_hvac(device, temperature, mode, fan_speed, state):
@@ -428,45 +433,15 @@ fields:
     command_execute(headers_dict, deviceId, command, parameter=parameter)
 
 # Status checking
-# Returns true if there exist states that require status checking.
-def is_status_entites():
-  log.warning(f"is_status_entities called.")
-  states = state.names()
-  for s in states:
-    if (PREFIX in s):
-      log.warning(f"is_status_entities state {s} found containing {PREFIX}.")
-      if KEY_NON_IR_TYPE in state.getattr(name).keys():
-        type = state.getattr(name)[KEY_NON_IR_TYPE]
-        log.warning(f"is_status_entities state {s} found of type {type}.")
-        return (type == "Contact Sensor") or (type == "Curtain") or (type == "Meter")
-  return False
-
 # Status requests got every 5 minutes (288 API calls / device / day).
 @time_trigger("period(0:00, 300 sec)")
-@state_active("pyscript.is_status_entites")
 def switchbot_time_trigger():
   states = state.names()
   for s in states:
     if (PREFIX in s):
-      if KEY_NON_IR_TYPE in state.getattr(name).keys():
-        type = state.getattr(name)[KEY_NON_IR_TYPE]
-        if type == "Contact Sensor":
-          get_binary_sensor_state(s, "openState")
-        elif type == "Curtain":
-          get_curtain_status(s, "slidePosition")
-        elif type == "Meter":
-          get_meter_status(s, "temperature", "humidity")
-
-# Get and set status of device.
-def get_device_status(device, attribute1, attribute2=None):
-  deviceId = extract_device_id(device)
-  headers_dict = auth(**pyscript.app_config)
-  data = get_status(headers_dict, deviceId)
-  if data != None:
-    status = data['body'][attribute1]
-    state.set(device, value=deviceId, new_attributes={attribute1: status})
-    log.warning(f"Successfully got status of {device} {attribute1} which is {status}")
-    if attribute2 != None:
-      status = data['body'][attribute2]
-      state.set(device, value=deviceId, new_attributes={attribute2: status})
-      log.warning(f"Successfully got status of {device} {attribute2} which is {status}")
+      if KEY_NON_IR_TYPE in state.getattr(s).keys():
+        deviceId = extract_device_id(s)
+        headers_dict = auth(**pyscript.app_config)
+        data = get_status(headers_dict, deviceId)
+        if data != None:
+          state.set(s, value=deviceId, new_attributes=data['body'])
