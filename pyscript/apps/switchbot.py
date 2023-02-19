@@ -329,5 +329,5 @@ fields:
       """
     deviceId = extract_device_id(device)
     headers_dict = auth(**pyscript.app_config)
-    command_execute(headers_dict, deviceId, command, parameter=parameter, custom=(commandType=='customize'))
+    command_execute(headers_dict, deviceId, command, parameter=parameter, custom=(commandType=='custom'))
     

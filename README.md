@@ -1,7 +1,7 @@
 [![License][licensing-shield]](LICENSE)
 All rights to the [API][switchbot-api-repo] belong to [OpenWonderLabs][OpenWonderLabs-lnk].
 
-# SwitchBot API Script Caller (v 0.2.1)
+# SwitchBot API Script Caller (v 0.2.0)
 
 This (Py)Script allows you to control all (WIP) your SwitchBot devices via API calls (1.1).
 
@@ -15,9 +15,9 @@ For more info click [here][switchbot-api-repo]
     - [Refresh Devices](#switchbot-refresh-devices)
     - [Turn On](#switchbot-turn-on)
     - [Turn Off](#switchbot-turn-off)
-    - [HVAC](#switchbot-ir-hvac-control)
+    - [HVAC](#switchbot-hvac-api-interface)
     - [Light](#switchbot-ir-light-control)
-    - [Generic Command](#switchbot-generic-command)
+    - [Generic Command](#switchbot-generic-command-api-interface)
 - [Work in Progress](#work-in-progress)
 - [Changelog](#changelog)
 
@@ -27,15 +27,6 @@ For more info click [here][switchbot-api-repo]
     - PyScript Integration ([docs][pyscript-docs])
       
 ## Installation
-⚠️ **If you update from one of the following versions there have been breaking changes:**
-<details>
-<summary>Versions</summary>
-
-- Unnumbered (2023.01.14)
-
-</details> 
-
-
 ### Procedure
 1. **Clone this repository in your config folder**
    ```sh
@@ -84,7 +75,7 @@ The project is still in developpement and breaking changes may occurs.
 ### Installation Notes
 - In order to see the `Developper options` in the Switchbot app (version ≥6.14), click repetively on the version number in the App's settings.
     <details>
-    <summary>Click here for detailed procedure</summary>
+    <summary>Click her for detailed procedure</summary>
   
   ![SwitchBot](https://user-images.githubusercontent.com/26876994/210898538-5d07a304-3446-48e0-b020-69140ba89b45.png)
   
@@ -176,17 +167,10 @@ _Allows you to send any request to the API. (See [documentation][generic-cmd-lin
 The script works fine, but everything is still WIP, including this file.
 For any problems open an Issue, (soon I will insert a template for that).
 
+
 ## Changelog
-### 2023.02.19 v0.2.1 (🛠️ Some Fixes)
-
-**Fixed ([#15][i15]) `commandType` parameters in `Generic Command`**.<br>
-*Suggest updating if you need to control custom remotes created in the mobile app*.
-
-
-
-### 2023.01.16 v0.2.0 (🟢 New Features and 🛠️ Some Fixes)
-**Add service `SwitchBot IR Light Control`**:<br>
- Send command via infrared to light device.
+### 2023.01.16 v0.2.0 (🟢 New Features and 🛠️ some fixes)
+**Add service `SwitchBot IR Light Control`** : Send command via infrared to light device.
 
 **Corrected some descriptions**.
 
@@ -202,10 +186,9 @@ For any problems open an Issue, (soon I will insert a template for that).
 
 
 ### 2023.01.14 v0.1.0 (⚠️ Breaking changes)
-**Add service `SwitchBot Refresh Devices`**:<br>
-Retrieves your IR devices from the API. Services now requires `device` instead of `deviceId`. No need to copy paste the id manually anymore.
+**Add service `SwitchBot Refresh Devices`** : Retrieves your IR devices from the API. Services now requires `device` instead of `deviceId`. No need to copy paste the id manually anymore.
 
-Previously:
+Previously:  
   - Services param was `deviceId`
  
 Now:
@@ -213,7 +196,16 @@ Now:
  
 Make sure to run `SwitchBot Refresh Devices` before configuring anything else.
 
-[Full Changelog History here][Changelog]
+### 2023.01.05 (🟢 2 New Features)
+**Add Service `SwitchBot Turn On`**  
+**Add Service `SwitchBot Turn Off`**
+
+The `turn<On/Off>` services allow you to switch On and Off your device with a simple command requiring only the deviceId.
+Almost all devices are compatible with this command according to the API documentation.
+
+### Before (🟢 2 New Features)
+**Add Service `SwitchBot HVAC API Interface`**  
+**Add Service `SwitchBot Generic Command API Interface`**
 
 
 [licensing-shield]: https://img.shields.io/github/license/SiriosDev/SwitchBot-API-Script-Caller?style=flat-square
@@ -225,5 +217,3 @@ Make sure to run `SwitchBot Refresh Devices` before configuring anything else.
 [deviceid-link]: https://github.com/OpenWonderLabs/SwitchBotAPI#get-device-list
 [issues]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/issues/new
 [pr]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/pulls
-[Changelog]: CHANGELOG.md
-[i15]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/issues/15
