@@ -19,8 +19,7 @@ For more info click [here][switchbot-api-repo]
     - [Light](#switchbot-ir-light-control)
     - [Generic Command](#switchbot-generic-command-api-interface)
     - [Curtain](#switchbot-curtain-control)
-    - [Binary Sensor](#switchbot-binary-sensor-eg-contact-sensor)
-    - [Meter](#switchbot-meter-sensor)
+    - [Get Status](#switchbot-get status)
 - [Work in Progress](#work-in-progress)
 - [Changelog](#changelog)
 
@@ -103,8 +102,7 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-ir-light-control)
 - [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
 - [SwitchBot Curtain Command (`pyscript.switchbot_curtain_command`)](#switchbot-curtain-control)
-- [SwitchBot Binary Sensor Status (`pyscript.switchbot_binary_sensor_status`)](#switchbot-binary-sensor-eg-contact-sensor)
-- [SwitchBot Meter Sensor Status (`pyscript.switchbot_meter_sensor_status`)](#switchbot-meter-sensor)
+- [SwitchBot Get Status (`pyscript.switchbot_get_status`)](#switchbot-get-status)
 
 ### 🔸SwitchBot Refresh Devices
 _Creates Home Assistant `switch` entity for each IR Device and Bot connected to your SwitchBot Hub. IR devices and Bots are stored as `switch.switchbot_remote_<device_name>`._  
@@ -183,15 +181,9 @@ _Interface for Curtain (turnOn, turnOff, setPosition)_
 - `parameter:` (optional)
     - string giving the position for the setPosition command. (See the [SwitchbotAPI Curtain command]([url](https://github.com/OpenWonderLabs/SwitchBotAPI#curtain-2)).)
     
-### 🔸Switchbot Binary Sensor (eg Contact Sensor)
-_Gets the state of a Switchbot binary sensor (on, off)._
-Runs every five minutes generating 288 API calls per sensor per day.
-
-Parameters: ***None***
-
-### 🔸Switchbot Meter Sensor
-_Gets the state of a Switchbot Meter (temperature, humidity)._
-Runs every five minutes generating 288 API calls per meter per day.
+### 🔸Switchbot Get Status
+_Gets the state of Switchbot Bots, Contact Sensors, Curtains and Meters._
+Runs every five minutes generating 288 API calls per sensor per day. Switchbot limits API calls to 10,000 per day. So, this limits the number of devices to 34 (excluding IR devices.) See the [SwitchbotAPI API]([url](https://github.com/OpenWonderLabs/SwitchBotAPI#get-device-status)) for the data returned from a status call.
 
 Parameters: ***None***
 
@@ -203,13 +195,13 @@ For any problems open an Issue, (soon I will insert a template for that).
 
 ## Changelog
 ### <Release date> v? (🟢 New Features)
-**Add support for non-IR devices** : Bot, Contact Sensor, Curtain and Meter.**
+**Add support for non-IR devices** : Bot, Contact Sensor, Curtain and Meter.
 
-**Add service 'Switchbot Curtains Command'** : Send command to Curtain device.**
+**Add service 'Switchbot Curtains Command'** : Send command to Curtain device.
 
-**Add time trigger to get the status of binary sensors every 5 minutes.**
+**Add time trigger to get the status of Bots, Contact Sensors, Curtains and Meters every 5 minutes.** This will show in the Logbook even if you only have IR devices. However, the API calls will only be made for non-IR devices.
 
-**Add time trigger to get the status of Meter every 5 minutes.**
+**Add time trigger to run 'Refresh Devices' at startup.**
 
 ### 2023.01.16 v0.2.0 (🟢 New Features and 🛠️ some fixes)
 **Add service `SwitchBot IR Light Control`** : Send command via infrared to light device.
