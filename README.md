@@ -19,7 +19,7 @@ For more info click [here][switchbot-api-repo]
     - [Light](#switchbot-ir-light-control)
     - [Generic Command](#switchbot-generic-command-api-interface)
     - [Curtain](#switchbot-curtain-control)
-    - [Get Status](#switchbot-get status)
+    - [Get Status](#switchbot-get-status)
 - [Work in Progress](#work-in-progress)
 - [Changelog](#changelog)
 
