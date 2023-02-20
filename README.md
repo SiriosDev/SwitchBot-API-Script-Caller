@@ -101,9 +101,9 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot Refresh Devices (`pyscript.switchbot_refresh_devices`)](#switchbot-refresh-devices)
 - [SwitchBot Turn ON (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
 - [SwitchBot Turn OFF (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
-- [SwitchBot IR HVAC Control (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
+- [SwitchBot IR HVAC Control (`pyscript.switchbot_hvac`)](#switchbot-ir-hvac-control)
 - [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-ir-light-control)
-- [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
+- [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command)
 
 ### 🔸SwitchBot Refresh Devices
 _Create Home Assistant `switch` entity for each IR Device connected with your SwitchBot Hubs. Devices are stored as `switch.switchbot_remote_<device_name>`._  
