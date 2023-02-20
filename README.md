@@ -13,12 +13,12 @@ For more info click [here][switchbot-api-repo]
 - [Installation](#installation)
 - [How To Use](#how-to-use)
     - [Refresh Devices](#switchbot-refresh-devices)
+    - [Get Status](#switchbot-get-status)
     - [Turn On](#switchbot-turn-on)
     - [Turn Off](#switchbot-turn-off)
+    - [Curtain](#switchbot-curtain-control)
     - [HVAC](#switchbot-ir-hvac-control)
     - [Light](#switchbot-ir-light-control)
-    - [Curtain](#switchbot-curtain-control)
-    - [Get Status](#switchbot-get-status)
     - [Generic Command](#switchbot-generic-command)
 - [Work in Progress](#work-in-progress)
 - [Changelog](#changelog)
@@ -107,11 +107,11 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot Refresh Devices (`pyscript.switchbot_refresh_devices`)](#switchbot-refresh-devices)
 - [SwitchBot Turn ON (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
 - [SwitchBot Turn OFF (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
-- [SwitchBot IR HVAC Control (`pyscript.switchbot_hvac`)](#switchbot-hvac-api-interface)
+- [SwitchBot IR HVAC Control (`pyscript.switchbot_hvac`)](#switchbot-ir-hvac-control)
 - [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-ir-light-control)
-- [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command-api-interface)
 - [SwitchBot Curtain Command (`pyscript.switchbot_curtain_command`)](#switchbot-curtain-control)
 - [SwitchBot Get Status (`pyscript.switchbot_get_status`)](#switchbot-get-status)
+- [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command)
 
 ### 🔸SwitchBot Refresh Devices
 _Creates Home Assistant `switch` entity for each IR Device and Bot connected to your SwitchBot Hub. IR devices and Bots are stored as `switch.switchbot_remote_<device_name>`._  
