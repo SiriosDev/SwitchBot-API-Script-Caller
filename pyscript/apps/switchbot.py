@@ -175,14 +175,14 @@ fields:
     create_non_ir_entities(non_infrared)
 
 @service
-def switchbot_hvac(device=None, temperature=None, mode=None, fan_speed=None, state=None):
+def switchbot_ir_hvac(device=None, temperature=None, mode=None, fan_speed=None, state=None):
     """yaml
 name: SwitchBot IR HVAC Control
-description: Control IR HVAC "saved" in "Switchbot Hubs"
+description: Control IR HVAC connected to your SwitchBot account.
 fields:
   device:
     name: Device
-    description: HVAC Target device
+    description: Target device
     example: switch.switchbot_remote_hvac
     default:
     required: true
@@ -192,7 +192,7 @@ fields:
 
   state:
     name: Power State
-    description: HVAC Power State. (on by Default)
+    description: Select a State ("on" by Default)
     example: off
     default: on
     required: true
@@ -205,7 +205,7 @@ fields:
 
   temperature:
     name: Temperature
-    description: HVAC Target Temperature in Celsius (min 16 - Max 30). (26 by Default)
+    description: Select a target temperature (required for "on" state) (min 16 - Max 30) ("26" by Default)
     example: 26
     default: 26
     required: false
@@ -219,45 +219,52 @@ fields:
 
   mode:
     name: Mode
-    description: HVAC Mode Selector 1 (auto), 2 (cool), 3 (dry), 4 (fan), 5 (heat). (1 by Default)
-    example: 1
-    default: 1
+    description: Select a mode (required for "on" state) ("Auto" by Default)
+    example: Auto
+    default: Auto
     required: false
     selector:
-      number:
-        min: 1
-        max: 5
-        step: 1
-        mode: box
+      select:
+        options:
+          - Auto
+          - Cool
+          - Heat
+          - Dry
+          - Fan
+        mode: list
 
   fan_speed:
     name: Fan Speed
-    description: HVAC Fan Speed Selector 1 (auto), 2 (low), 3 (medium), 4 (high). (1 by Default)
-    example: 1
-    default: 1
+    description: Select a Fan Speed (required for "on" state) ("Auto" by Default)
+    example: Auto
+    default: Auto
     required: false
     selector:
-      number:
-        min: 1
-        max: 4
-        step: 1
-        mode: box
+      select:
+        options:
+          - Auto
+          - Low
+          - Medium
+          - High
+        mode: list
       """
     deviceId = extract_device_id(device)
     headers_dict = auth(**pyscript.app_config)
-    if temperature == None:
+    if temperature == None or state == "off":
       temperature = 26
-    if mode == None:
-      mode = 1
-    if fan_speed == None:
-      fan_speed = 1
-    command_execute(headers_dict, deviceId, 'setAll', parameter=f"{temperature},{mode},{fan_speed},{state}")
+    if mode == None or state == "off":
+      mode = "Auto"
+    if fan_speed == None or state == "off":
+      fan_speed = "Auto"
+    modes={"Auto": "1","Cool": "2","Dry": "3","Fan": "4","Heat": "5"}
+    speeds={"Auto": "1","Low": "2","Medium": "3","High": "4"}
+    command_execute(headers_dict, deviceId, 'setAll', parameter=f"{temperature},{modes[mode]},{speeds[fan_speed]},{state}")
 
 @service
-def switchbot_ir_light_control(device=None, command=None, steps=None):
+def switchbot_ir_light(device=None, command=None, steps=None):
     """yaml
 name: SwitchBot IR Light Control
-description: Control IR Light "saved" in "Switchbot Hubs"
+description: Control IR Light connected to your SwitchBot account.
 fields:
   device:
     name: Device
@@ -284,8 +291,8 @@ fields:
         mode: list
   steps:
     name: Steps
-    description: How many times to run the command (default 1), only works with brightnessUp/Down
-    example: turnOff
+    description: Number of Steps (required for "brightnessUp" and "brightnessDown" command) ("1" by Default)
+    example: 1
     default: 1
     required: false
     selector:
@@ -294,19 +301,19 @@ fields:
         max: 10
         mode: box
     """
+    deviceId = extract_device_id(device)
+    headers = auth(**pyscript.app_config)
     if steps == None or command == "turnOn" or command== "turnOff":
       steps=1
     for i in range(steps):
-      device_id = extract_device_id(device)
-      headers = auth(**pyscript.app_config)
-      command_execute(headers, device_id, command)
+      command_execute(headers, deviceId, command)
     
 
 @service
-def switchbot_curtain_command(device=None, command=None, index=None, mode=None, position=None):
+def switchbot_curtain(device=None, command=None, index=None, mode=None, position=None):
     """yaml
 name: SwitchBot Curtain Command
-description: Control Switchbot curtain.
+description: Control Switchbot Curtain connected to your SwitchBot account.
 fields:
   device:
     name: Device
@@ -333,8 +340,8 @@ fields:
         mode: list
 
   index:
-    name: Indexs
-    description: waiting for switchbot team clarifications
+    name: Index [WIP]
+    description: waiting for switchbot team clarifications ("0" by Default)
     example: 0
     default: 0
     required: false
@@ -346,8 +353,8 @@ fields:
         mode: box
 
   mode:
-    name: Modes
-    description: Select a Mode (required for "setPosition" command)
+    name: Mode
+    description: Select a Mode (required for "setPosition" command) ("Default" by Default)
     example: Performance
     default: Default
     required: false
@@ -361,7 +368,7 @@ fields:
 
   position:
     name: Position
-    description: Select a Mode (0%-100%) (required for "setPosition" command)
+    description: Select a Mode (0%-100%) (required for "setPosition" command) ("50" by Default)
     example: 50
     default: 50
     required: false
@@ -371,16 +378,67 @@ fields:
         max: 100
         step: 1
         unit_of_measurement: "%"
-        mode: slider
+        mode: box
     """
     
     deviceId = extract_device_id(device)
     headers_dict = auth(**pyscript.app_config)
     modes={"Performance": "0", "Silent": "1", "Default": "ff"}
+    if position == None:
+      position = "50"
+    if index == None:
+      index = "0"
     if command == "turnOn" or command == "turnOff":
       command_execute(headers_dict, deviceId, command, parameter=None)
     else:
       command_execute(headers_dict, deviceId, command, parameter=f"{index},{modes[mode]},{position}")
+
+@service
+def switchbot_bot(device=None, command=None, repetition=None):
+    """yaml
+name: SwitchBot Turn Device OFF
+description: Turn Switchbot controlled device OFF
+fields:
+  device:
+    name: Device
+    description: Target device
+    example: switch.switchbot_remote_bot
+    default:
+    required: true
+    selector:
+      entity:
+        domain: switch
+  command:
+    name: Command
+    description: Select a Command
+    example: turnOff
+    default: 
+    required: true
+    selector:
+      select:
+        options:
+          - turnOn
+          - turnOff
+          - press
+        mode: list
+  repetition:
+    name: Repetition
+    description: Number of Repetition (required for "press" command) ("1" by Default)
+    example: 1
+    default: 1
+    required: false
+    selector:
+      number:
+        min: 1
+        max: 10
+        mode: box
+    """
+    deviceId = extract_device_id(device)
+    headers_dict=auth(**pyscript.app_config)
+    if repetition == None or not (command == "press"):
+      repetition = 1
+    for i in range(repetition): 
+      command_execute(headers_dict, deviceId, command)
 
 @service
 def switchbot_turn_on(device=None):
@@ -432,7 +490,7 @@ description: Control Switchbot Device through custom command(refer to https://gi
 fields:
   device:
     name: Device
-    description: Target device (get req. to api)
+    description: Target device
     example: switch.switchbot_remote_light
     default:
     required: true
@@ -442,7 +500,7 @@ fields:
 
   command:
     name: Command
-    description: the name of the command
+    description: The name of the command
     example: turnOff
     default: 
     required: true
@@ -451,7 +509,7 @@ fields:
 
   parameter:
     name: Parameters
-    description: some commands require parameters, such as SetChannel
+    description: Some commands require parameters, such as SetChannel
     example: 
     default: 
     required: false
@@ -460,7 +518,7 @@ fields:
 
   commandType:
     name: Command Type
-    description: for customized buttons, this needs to be set to customzie
+    description: For customized buttons, this needs to be set to customzie
     example: command
     default: command
     required: true
