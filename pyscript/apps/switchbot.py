@@ -312,7 +312,7 @@ fields:
 @service
 def switchbot_curtain(device=None, command=None, index=None, mode=None, position=None):
     """yaml
-name: SwitchBot Curtain Command
+name: SwitchBot Curtain Control
 description: Control Switchbot Curtain connected to your SwitchBot account.
 fields:
   device:
@@ -396,8 +396,8 @@ fields:
 @service
 def switchbot_bot(device=None, command=None, repetition=None):
     """yaml
-name: SwitchBot Turn Device OFF
-description: Turn Switchbot controlled device OFF
+name: SwitchBot Bot Control
+description: Control Switchbot Bot connected to your SwitchBot account.
 fields:
   device:
     name: Device
