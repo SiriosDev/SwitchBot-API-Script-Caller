@@ -335,8 +335,8 @@ fields:
   index:
     name: Indexs
     description: waiting for switchbot team clarifications
-    example: 
-    default: 
+    example: 0
+    default: 0
     required: false
     selector:
       number:
