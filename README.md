@@ -108,13 +108,14 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot Get Status (`pyscript.switchbot_get_status`)](#switchbot-get-status)
 - [SwitchBot Turn ON (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
 - [SwitchBot Turn OFF (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
-- [SwitchBot Curtain Command (`pyscript.switchbot_curtain_command`)](#switchbot-curtain-control)
+- [SwitchBot Bot Control (`pyscript.switchbot_curtain_command`)](#switchbot-bot-control)
+- [SwitchBot Curtain Control (`pyscript.switchbot_curtain_command`)](#switchbot-curtain-control)
 - [SwitchBot IR HVAC Control (`pyscript.switchbot_hvac`)](#switchbot-ir-hvac-control)
 - [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-ir-light-control)
 - [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command)
 
 ### 🔸SwitchBot Refresh Devices
-_Creates Home Assistant `switch` entity for each IR Device and Bot connected to your SwitchBot Hub,`cover` entity for each Curtain, `binary_sensor` entity for each Contact Sensor and `sensor` entity for each Meter connected to your Switchbot Hub. These devices are stored as `<entity_type>.switchbot_remote_<device_name>` eg `cover.switchbot_remote_bedroom_curtains`_
+_Creates Home Assistant entity with the best type-domain association, otherwise with domain `switch`. These devices are stored as `<entity_type>.switchbot_remote_<device_name>` eg: A SwitchBot Curtain™ will become `cover.switchbot_remote_bedroom_curtains`_
 
 _The `<device_name>` corresponds to the name of the device in the SwitchBot app._  
 _If `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
@@ -144,6 +145,18 @@ Parameters:
 - `device`
     - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 
+
+### 🔸SwitchBot Bot Control
+_Interface for "Classic" Bot (turnOn, turnOff, press) devices._
+
+**Parameters:**
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
+- `command:`
+    - string value between `turnOn`, `turnOff`, `press`
+- `repetition:`
+    - int value from `1` to `10`, _only works with `press`_, iterates the command as many times as selected.
+
 ### 🔸Switchbot Curtain Control
 _Interface for Curtain (turnOn, turnOff, setPosition) devices._
 - `device`
@@ -151,7 +164,7 @@ _Interface for Curtain (turnOn, turnOff, setPosition) devices._
 - `command:`
     - string value between `turnOn`, `turnOff`, `setPosition`
 - `index:`
-    - int value between `?????` (required for "setPosition" command, otherwise it will be ignored)
+    - [wip] int value between `?????` (required for "setPosition" command, otherwise it will be ignored)
 - `mode:`
     - string value between `Performance`, `Silent`, `Default` (required for "setPosition" command, otherwise it will be ignored)
 - `position:`
@@ -163,14 +176,14 @@ _Interface for infrared HVAC (heating, ventilation and air conditioning) devices
 **Parameters:**
 - `device`
     - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
+- `state:`
+    - string value between `on` and `off`
 - `temperature:`
     - int value from `16` to `30`
 - `mode:`
-    - int value between `1` (auto), `2` (cool), `3` (dry), `4` (fan), `5` (heat)
+    - string value between `Auto`, `Cool`, `Dry`, `Fan`, `Heat`
 - `fan_speed:`
-    - int value between `1` (auto), `2` (low), `3` (medium), `4` (high)
-- `state:`
-    - string value between `on` and `off`
+    - int value between `Auto`, `Low`, `Medium`, `High`
 
 
 ### 🔸SwitchBot IR Light Control

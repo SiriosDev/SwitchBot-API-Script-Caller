@@ -2,7 +2,6 @@ import time, hashlib, hmac, base64, requests
 import re, yaml, io
 
 PREFIX="switchbot_remote_"
-DOMAIN="switch"
 KEY_DEV_TYPE='remoteType'
 KEY_DEV_NAME='deviceName'
 KEY_DEV_ID='deviceId'
@@ -30,20 +29,16 @@ def auth(token=None, secret=None, nonce=None):
 def gen_icon(dev):
   '''Generate icon based on device type. Default to a remote icon.'''
   ico = 'remote'
-  icons = {'Projector': 'projector', 'Light': 'lightbulb-on', 'TV':'television', 'Fan':'fan', 'Air Conditioner': 'air-conditioner'}
-  typ = dev.get(KEY_DEV_TYPE)
+  icons = {'Projector': 'projector', 'Light': 'lightbulb-on', 'TV':'television', 'Fan':'fan', 'Air Conditioner': 'air-conditioner', 'Curtain': 'curtains', 'Contact Sensor': 'leak', 'Meter': 'thermometer', 'MeterPlus': 'thermometer'}
+  typ = dev.get(KEY_DEV_TYPE, None)
+  if typ == None:
+    typ = dev.get(KEY_NON_IR_TYPE)
+    
   if typ in icons:
     ico = icons[typ]
   return 'mdi:'+ico
 
-def gen_icon(non_ir):
-  '''Generate icon based on device type. Default to a robot icon.'''
-  ico = 'robot'
-  icons = {'Curtain': 'curtains', 'Contact Sensor': 'leak', 'Meter': 'thermometer'}
-  typ = non_ir.get(KEY_NON_IR_TYPE)
-  if typ in icons:
-    ico = icons[typ]
-  return 'mdi:'+ico
+
 
 def clear_existing():
   '''Clear switchbot devices which were saved to avoid zombies.'''
@@ -56,31 +51,23 @@ def clear_existing():
 def gen_dev_uid(dev:dict):
   '''Generate a Unique ID for Switchbot IR devices. (devices must have unique names in switchbot app so it works)'''
   name = dev.get(KEY_DEV_NAME)
-  if name is not None:
-    name = name.lower()
-    name = re.sub(r'[^0-9a-z]+', '_', name)
-    if name not in ['_', '']:
-      return PREFIX+name
-  return PREFIX + re.sub(r'[^0-9a-z]+', '_', str(dev.get(KEY_DEV_TYPE)).lower())+'_'+str(dev.get(KEY_DEV_ID)[-4:])
-
-def gen_non_ir_uid(non_ir:dict):
-  '''Generate a Unique ID for Switchbot non-IR devices. (devices must have unique names in switchbot app so it works)'''
-  name = non_ir.get(KEY_DEV_NAME)
-  domain = convert_switchbot_type_to_ha_domain(non_ir.get(KEY_NON_IR_TYPE))
+  domain = type_to_domain(dev.get(KEY_DEV_TYPE))
+  if domain == None:
+    domain = type_to_domain(dev.get(KEY_NON_IR_TYPE))
   if name is not None:
     name = name.lower()
     name = re.sub(r'[^0-9a-z]+', '_', name)
     if name not in ['_', '']:
       return domain + '.' + PREFIX + name
-  return domain + '.' + PREFIX + re.sub(r'[^0-9a-z]+', '_', str(non_ir.get(KEY_NON_IR_TYPE)).lower())+'_'+str(non_ir.get(KEY_DEV_ID)[-4:])
+  return domain + '.' + PREFIX + re.sub(r'[^0-9a-z]+', '_', str(dev.get(KEY_DEV_TYPE)).lower())+'_'+str(dev.get(KEY_DEV_ID)[-4:])
 
-def convert_switchbot_type_to_ha_domain(type):
-  if type == 'Curtain':
-    return 'cover'
-  elif type == 'Contact Sensor':
-    return 'binary_sensor'
-  elif type == 'Meter':
-    return 'sensor'
+
+def type_to_domain(type):
+  TTD = {'Curtain': 'cover', 'Contact Sensor': 'binary_sensor', 'Meter':'sensor', 'MeterPlus':'sensor', "Air Conditioner": "climate", 'Light': 'ligth'}
+  if type in TTD:
+    return TTD[type]
+  elif type == None:
+    return None
   else:
     return 'switch'
 
@@ -111,7 +98,7 @@ def create_ir_entities(devices):
     log.warning(f"Adding Switchbot Device {dev.get(KEY_DEV_NAME)} [{dev.get(KEY_DEV_TYPE)}] -> {dev.get(KEY_DEV_ID)}")
     dev['friendly_name'] = gen_dev_name(dev)
     dev['icon'] = gen_icon(dev)
-    state.set(f'{DOMAIN}.{gen_dev_uid(dev)}', value=dev.get(KEY_DEV_ID), new_attributes=dev )
+    state.set(f'{gen_dev_uid(dev)}', value=dev.get(KEY_DEV_ID), new_attributes=dev)
 
 def create_non_ir_entities(devices):
   for non_ir in devices:
@@ -119,7 +106,7 @@ def create_non_ir_entities(devices):
       log.warning(f"Adding Switchbot Device {non_ir.get(KEY_DEV_NAME)} [{non_ir.get(KEY_NON_IR_TYPE)}] -> {non_ir.get(KEY_DEV_ID)}")
       non_ir['friendly_name'] = gen_dev_name(non_ir)
       non_ir['icon'] = gen_icon(non_ir)
-      state.set(f'{gen_non_ir_uid(non_ir)}', value=non_ir.get(KEY_DEV_ID), new_attributes=non_ir)
+      state.set(f'{gen_dev_uid(non_ir)}', value=non_ir.get(KEY_DEV_ID), new_attributes=non_ir)
   switchbot_get_status() # Get an initial status for sensor-like devices.
 
 
@@ -544,5 +531,8 @@ def switchbot_get_status():
         deviceId = extract_device_id(s)
         headers_dict = auth(**pyscript.app_config)
         data = get_status(headers_dict, deviceId)
+        temp = state.getattr(s)
+        data['body']['friendly_name'] = temp['friendly_name']
+        data['body']['icon'] = temp['icon']
         if data != None:
           state.set(s, value=deviceId, new_attributes=data['body'])
