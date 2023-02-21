@@ -16,6 +16,7 @@ For more info click [here][switchbot-api-repo]
     - [Get Status](#switchbot-get-status)
     - [Turn On](#switchbot-turn-on)
     - [Turn Off](#switchbot-turn-off)
+    - [Bot](#switchbot-bot-control)
     - [Curtain](#switchbot-curtain-control)
     - [HVAC](#switchbot-ir-hvac-control)
     - [Light](#switchbot-ir-light-control)
