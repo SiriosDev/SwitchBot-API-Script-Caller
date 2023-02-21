@@ -477,7 +477,7 @@ fields:
 
 # Status checking
 # Status requests got every 5 minutes (288 API calls / device / day).
-@time_trigger("period(0:00, 300 sec)")
+#@time_trigger("period(0:00, 300 sec)")
 def switchbot_get_status():
   states = state.names()
   for s in states:
