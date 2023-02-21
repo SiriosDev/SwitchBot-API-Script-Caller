@@ -175,7 +175,7 @@ fields:
     create_non_ir_entities(non_infrared)
 
 @service
-def switchbot_hvac(device, temperature, mode, fan_speed, state):
+def switchbot_hvac(device=None, temperature=None, mode=None, fan_speed=None, state=None):
     """yaml
 name: SwitchBot IR HVAC Control
 description: Control IR HVAC "saved" in "Switchbot Hubs"
@@ -190,12 +190,25 @@ fields:
       entity:
         domain: switch
 
+  state:
+    name: Power State
+    description: HVAC Power State. (on by Default)
+    example: off
+    default: on
+    required: true
+    selector:
+      select:
+        options:
+          - on
+          - off
+        mode: list
+
   temperature:
     name: Temperature
-    description: HVAC Target Temperature in Celsius (min 16 - Max 30)
+    description: HVAC Target Temperature in Celsius (min 16 - Max 30). (26 by Default)
     example: 26
-    default:
-    required: true
+    default: 26
+    required: false
     selector:
       number:
         min: 16
@@ -206,10 +219,10 @@ fields:
 
   mode:
     name: Mode
-    description: HVAC Mode Selector 1 (auto), 2 (cool), 3 (dry), 4 (fan), 5 (heat)
+    description: HVAC Mode Selector 1 (auto), 2 (cool), 3 (dry), 4 (fan), 5 (heat). (1 by Default)
     example: 1
-    default:
-    required: true
+    default: 1
+    required: false
     selector:
       number:
         min: 1
@@ -219,32 +232,25 @@ fields:
 
   fan_speed:
     name: Fan Speed
-    description: HVAC Fan Speed Selector 1 (auto), 2 (low), 3 (medium), 4 (high)
+    description: HVAC Fan Speed Selector 1 (auto), 2 (low), 3 (medium), 4 (high). (1 by Default)
     example: 1
-    default:
-    required: true
+    default: 1
+    required: false
     selector:
       number:
         min: 1
         max: 4
         step: 1
         mode: box
-
-  state:
-    name: Power State
-    description: HVAC Power State
-    example: off
-    default:
-    required: true
-    selector:
-      select:
-        options:
-          - on
-          - off
-        mode: list
       """
     deviceId = extract_device_id(device)
     headers_dict = auth(**pyscript.app_config)
+    if temperature == None:
+      temperature = 26
+    if mode == None:
+      mode = 1
+    if fan_speed == None:
+      fan_speed = 1
     command_execute(headers_dict, deviceId, 'setAll', parameter=f"{temperature},{mode},{fan_speed},{state}")
 
 @service
@@ -294,6 +300,87 @@ fields:
       device_id = extract_device_id(device)
       headers = auth(**pyscript.app_config)
       command_execute(headers, device_id, command)
+    
+
+@service
+def switchbot_curtain_command(device=None, command=None, index=None, mode=None, position=None):
+    """yaml
+name: SwitchBot Curtain Command
+description: Control Switchbot curtain.
+fields:
+  device:
+    name: Device
+    description: Target device
+    example: cover.switchbot_remote_bedroom_curtains
+    default:
+    required: true
+    selector:
+      entity:
+        domain: cover
+
+  command:
+    name: Command
+    description: Select a Command
+    example: turnOff
+    default: 
+    required: true
+    selector:
+      select:
+        options:
+          - turnOn
+          - turnOff
+          - setPosition
+        mode: list
+
+  index:
+    name: Indexs
+    description: waiting for switchbot team clarifications
+    example: 
+    default: 
+    required: false
+    selector:
+      number:
+        min: 0
+        max: 1
+        step: 1
+        mode: box
+
+  mode:
+    name: Modes
+    description: Select a Mode (required for "setPosition" command)
+    example: Performance
+    default: Default
+    required: false
+    selector:
+      select:
+        options:
+          - Performance
+          - Silent
+          - Default 
+        mode: list
+
+  position:
+    name: Position
+    description: Select a Mode (0%-100%) (required for "setPosition" command)
+    example: 50
+    default: 50
+    required: false
+    selector:
+      number:
+        min: 0
+        max: 100
+        step: 1
+        unit_of_measurement: %
+        mode: slider
+    """
+    
+    deviceId = extract_device_id(device)
+    headers_dict = auth(**pyscript.app_config)
+    modes={"Performance": "0", "Silent": "1", "Default": "ff"}
+    if command == "turnOn" or command == "turnOff":
+      command_execute(headers_dict, deviceId, command, parameter=None)
+    else:
+      command_execute(headers_dict, deviceId, command, parameter=f"{index},{modes[mode]},{position}")
 
 @service
 def switchbot_turn_on(device=None):
@@ -387,50 +474,6 @@ fields:
     deviceId = extract_device_id(device)
     headers_dict = auth(**pyscript.app_config)
     command_execute(headers_dict, deviceId, command, parameter=parameter, custom=(commandType=='customize'))
-    
-
-@service
-def switchbot_curtain_command(device=None, command=None, parameter=None):
-    """yaml
-name: SwitchBot Curtain Command
-description: Control Switchbot curtain.
-fields:
-  device:
-    name: Device
-    description: the name of the device as in the SwitchBot app
-    example: cover.switchbot_remote_bedroom_curtains
-    default:
-    required: true
-    selector:
-      entity:
-        domain: cover
-
-  command:
-    name: Command
-    description: the name of the command
-    example: turnOff
-    default: 
-    required: true
-    selector:
-      text:
-
-  parameter:
-    name: Parameters
-    description: some commands require parameters, such as Position
-    example: 
-    default: 
-    required: false
-    selector:
-      select:
-        options:
-          - turnOn
-          - turnOff
-          - setPosition
-        mode: list
-    """
-    deviceId = extract_device_id(device)
-    headers_dict = auth(**pyscript.app_config)
-    command_execute(headers_dict, deviceId, command, parameter=parameter)
 
 # Status checking
 # Status requests got every 5 minutes (288 API calls / device / day).

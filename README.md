@@ -85,7 +85,7 @@ cd SwitchBot-API-Script-Caller
 git pull
 ```
 ⚠️ **See changelog before updating.**  
-The project is still in development and breaking changes may occurs.
+The project is still under development, and breaking changes may **frequently** occur.
 
 ### Installation Notes
 - In order to see the `Developer options` in the Switchbot app (version ≥6.14), click repetively on the version number in the App's settings.
@@ -105,41 +105,60 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 
 ### Summary
 - [SwitchBot Refresh Devices (`pyscript.switchbot_refresh_devices`)](#switchbot-refresh-devices)
+- [SwitchBot Get Status (`pyscript.switchbot_get_status`)](#switchbot-get-status)
 - [SwitchBot Turn ON (`pyscript.switchbot_turn_on`)](#switchbot-turn-on)
 - [SwitchBot Turn OFF (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
+- [SwitchBot Curtain Command (`pyscript.switchbot_curtain_command`)](#switchbot-curtain-control)
 - [SwitchBot IR HVAC Control (`pyscript.switchbot_hvac`)](#switchbot-ir-hvac-control)
 - [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-ir-light-control)
-- [SwitchBot Curtain Command (`pyscript.switchbot_curtain_command`)](#switchbot-curtain-control)
-- [SwitchBot Get Status (`pyscript.switchbot_get_status`)](#switchbot-get-status)
 - [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command)
 
 ### 🔸SwitchBot Refresh Devices
-_Creates Home Assistant `switch` entity for each IR Device and Bot connected to your SwitchBot Hub. IR devices and Bots are stored as `switch.switchbot_remote_<device_name>`._  
-_Creates Home Assistant `cover` entity for each Curtain, `binary_sensor` entity for each Contact Sensor and `sensor` entity for each Meter connected to your Switchbot Hub. These devices are stored as `<entity_type>.switchbot_remote_<device_name>` eg `cover.switchbot_remote_bedroom_curtains`_
+_Creates Home Assistant `switch` entity for each IR Device and Bot connected to your SwitchBot Hub,`cover` entity for each Curtain, `binary_sensor` entity for each Contact Sensor and `sensor` entity for each Meter connected to your Switchbot Hub. These devices are stored as `<entity_type>.switchbot_remote_<device_name>` eg `cover.switchbot_remote_bedroom_curtains`_
 
-_`<device_name>` corresponds to the name of the device in the SwitchBot app._  
+_The `<device_name>` corresponds to the name of the device in the SwitchBot app._  
 _If `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
+_The `<deviceId>` is an internal unique code._  
 _The entities can then be used for sending commands or getting status using other functions of this pyscript. ⚠️ Not working stand alone ⚠️_
-_In case the device doesn't exist in the future, you will be notified on your devices._
+_If this service does not find all the devices it had previously found, it will alert you with a persistent notification in the HA WebUi._
+
+Parameters: ***None***
+    
+### 🔸Switchbot Get Status
+_Gets the state of Switchbot Bots, Contact Sensors, Curtains and Meters._
+Runs every five minutes generating 288 API calls per sensor per day. Switchbot limits API calls to 10,000 per day. So, this limits the number of devices to 34 (excluding IR devices.) See the [SwitchbotAPI API]([url](https://github.com/OpenWonderLabs/SwitchBotAPI#get-device-status)) for the data returned from a status call.
 
 Parameters: ***None***
 
 ### 🔸SwitchBot Turn On
-_Turn a device ON_
+_Turn a device ON._
 
 Parameters:
 - `device`
     - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 
 ### 🔸SwitchBot Turn Off
-_Turn a device OFF_
+_Turn a device OFF._
 
 Parameters:
 - `device`
     - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 
+### 🔸Switchbot Curtain Control
+_Interface for Curtain (turnOn, turnOff, setPosition) devices._
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
+- `command:`
+    - string value between `turnOn`, `turnOff`, `setPosition`
+- `index:`
+    - int value between `?????` (required for "setPosition" command, otherwise it will be ignored)
+- `mode:`
+    - string value between `Performance`, `Silent`, `Default` (required for "setPosition" command, otherwise it will be ignored)
+- `position:`
+    - int value (in percentage) between `0` and `100` (required for "setPosition" command, otherwise it will be ignored)
+
 ### 🔸SwitchBot IR HVAC Control
-_Interface for infrared HVAC (heating, ventilation and air conditioning) device._
+_Interface for infrared HVAC (heating, ventilation and air conditioning) devices._
 
 **Parameters:**
 - `device`
@@ -155,7 +174,7 @@ _Interface for infrared HVAC (heating, ventilation and air conditioning) device.
 
 
 ### 🔸SwitchBot IR Light Control
-_Interface for infrared Light (turnOn, turnOff, brightnessUp and brightnessDown) device._
+_Interface for infrared Light (turnOn, turnOff, brightnessUp and brightnessDown) devices._
 
 **Parameters:**
 - `device`
@@ -180,21 +199,6 @@ _Allows you to send any request to the API. (See [documentation][generic-cmd-lin
 - `commandType:`
     - `command` for standard commands
     - `customize` for custom commands
-
-### 🔸Switchbot Curtain Control
-_Interface for Curtain (turnOn, turnOff, setPosition)_
-- `device`
-    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
-- `command:`
-    - string value between `turnOn`, `turnOff`, `setPosition`
-- `parameter:` (optional)
-    - string giving the position for the setPosition command. (See the [SwitchbotAPI Curtain command]([url](https://github.com/OpenWonderLabs/SwitchBotAPI#curtain-2)).)
-    
-### 🔸Switchbot Get Status
-_Gets the state of Switchbot Bots, Contact Sensors, Curtains and Meters._
-Runs every five minutes generating 288 API calls per sensor per day. Switchbot limits API calls to 10,000 per day. So, this limits the number of devices to 34 (excluding IR devices.) See the [SwitchbotAPI API]([url](https://github.com/OpenWonderLabs/SwitchBotAPI#get-device-status)) for the data returned from a status call.
-
-Parameters: ***None***
 
 
 ## Work in Progress
@@ -221,7 +225,6 @@ For any problems open an Issue, (soon I will insert a template for that).
 ### 2023.01.16 v0.2.0 (🟢 New Features and 🛠️ Some Fixes)
 **Add service `SwitchBot IR Light Control`**:<br>
  Send command via infrared to light device.
-
 
 **Corrected some descriptions**.
 
