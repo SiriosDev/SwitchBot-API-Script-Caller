@@ -370,7 +370,7 @@ fields:
         min: 0
         max: 100
         step: 1
-        unit_of_measurement: %
+        unit_of_measurement: "%"
         mode: slider
     """
     
