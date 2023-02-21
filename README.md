@@ -13,8 +13,10 @@ For more info click [here][switchbot-api-repo]
 - [Installation](#installation)
 - [How To Use](#how-to-use)
     - [Refresh Devices](#switchbot-refresh-devices)
+    - [Get Status](#switchbot-get-status)
     - [Turn On](#switchbot-turn-on)
     - [Turn Off](#switchbot-turn-off)
+    - [Curtain](#switchbot-curtain-control)
     - [HVAC](#switchbot-ir-hvac-control)
     - [Light](#switchbot-ir-light-control)
     - [Generic Command](#switchbot-generic-command)
@@ -42,7 +44,11 @@ For more info click [here][switchbot-api-repo]
    cd /config
    git clone https://github.com/SiriosDev/SwitchBot-API-Script-Caller.git
    ```
-2. **Include [`pyscript/switchbot.yaml`](./pyscript/switchbot.yaml) in your `pyscript/config.yaml` under the `switchbot` section**
+2. **Check if you have a `pyscript/config.yaml` file. If not, create one and then add the following in your main top-level configuration.yaml file.**
+    ``` yaml
+    pyscript: !include pyscript/config.yaml
+    ```
+3. **Include [`pyscript/switchbot.yaml`](./pyscript/switchbot.yaml) in your `pyscript/config.yaml` under the `switchbot` section**
    ```yaml
    # /config/pyscript/config.yaml
    allow_all_imports: true
@@ -52,7 +58,7 @@ For more info click [here][switchbot-api-repo]
     switchbot: !include /config/SwitchBot-API-Script-Caller/pyscript/switchbot.yaml
    # (...)
    ```
-3. **Set the authentication secrets in `secrets.yaml` homeassistant file**
+4. **Set the authentication secrets in `secrets.yaml` homeassistant file**
     - Random Value (`switchbot_nonc`) (I suggest using an UUID generator, but any unique alphanumeric string is fine)
     ```yaml
     # secrets.yaml
@@ -63,7 +69,7 @@ For more info click [here][switchbot-api-repo]
     # Random Value: you can use a UUID generator, but any unique alphanumeric string is OK
     switchbot_nonc: xxxxxxxxxx
     ```
-4. **Link the files in the `pyscript` directory**
+5. **Link the files in the `pyscript` directory**
    ```sh
    # use `mkdir -p /config/pyscript/apps/` if the directory doesn't exist
    cd /config/pyscript/apps/
@@ -79,10 +85,10 @@ cd SwitchBot-API-Script-Caller
 git pull
 ```
 ⚠️ **See changelog before updating.**  
-The project is still in developpement and breaking changes may occurs.
+The project is still in development and breaking changes may occurs.
 
 ### Installation Notes
-- In order to see the `Developper options` in the Switchbot app (version ≥6.14), click repetively on the version number in the App's settings.
+- In order to see the `Developer options` in the Switchbot app (version ≥6.14), click repetively on the version number in the App's settings.
     <details>
     <summary>Click here for detailed procedure</summary>
   
@@ -103,13 +109,17 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot Turn OFF (`pyscript.switchbot_turn_off`)](#switchbot-turn-off)
 - [SwitchBot IR HVAC Control (`pyscript.switchbot_hvac`)](#switchbot-ir-hvac-control)
 - [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-ir-light-control)
+- [SwitchBot Curtain Command (`pyscript.switchbot_curtain_command`)](#switchbot-curtain-control)
+- [SwitchBot Get Status (`pyscript.switchbot_get_status`)](#switchbot-get-status)
 - [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command)
 
 ### 🔸SwitchBot Refresh Devices
-_Create Home Assistant `switch` entity for each IR Device connected with your SwitchBot Hubs. Devices are stored as `switch.switchbot_remote_<device_name>`._  
-_`<device_name>` correspond to the name of the device in the SwitchBot app._  
-_if `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
-_The entities can then be used for sending commands using other functions of this pyscript. ⚠️ Not working stand alone ⚠️_
+_Creates Home Assistant `switch` entity for each IR Device and Bot connected to your SwitchBot Hub. IR devices and Bots are stored as `switch.switchbot_remote_<device_name>`._  
+_Creates Home Assistant `cover` entity for each Curtain, `binary_sensor` entity for each Contact Sensor and `sensor` entity for each Meter connected to your Switchbot Hub. These devices are stored as `<entity_type>.switchbot_remote_<device_name>` eg `cover.switchbot_remote_bedroom_curtains`_
+
+_`<device_name>` corresponds to the name of the device in the SwitchBot app._  
+_If `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
+_The entities can then be used for sending commands or getting status using other functions of this pyscript. ⚠️ Not working stand alone ⚠️_
 _In case the device doesn't exist in the future, you will be notified on your devices._
 
 Parameters: ***None***
@@ -163,7 +173,7 @@ _Allows you to send any request to the API. (See [documentation][generic-cmd-lin
 - `device`
     - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 - `command:`
-    - One of the command supported by the device. (see [documentation][generic-cmd-link])
+    - One of the commands supported by the device. (see [documentation][generic-cmd-link])
 - `parameter:` (optional)
     - Parameter for the command, if required (e.g. `SetChannel`)
     - use `default` if not used
@@ -171,22 +181,47 @@ _Allows you to send any request to the API. (See [documentation][generic-cmd-lin
     - `command` for standard commands
     - `customize` for custom commands
 
+### 🔸Switchbot Curtain Control
+_Interface for Curtain (turnOn, turnOff, setPosition)_
+- `device`
+    - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
+- `command:`
+    - string value between `turnOn`, `turnOff`, `setPosition`
+- `parameter:` (optional)
+    - string giving the position for the setPosition command. (See the [SwitchbotAPI Curtain command]([url](https://github.com/OpenWonderLabs/SwitchBotAPI#curtain-2)).)
+    
+### 🔸Switchbot Get Status
+_Gets the state of Switchbot Bots, Contact Sensors, Curtains and Meters._
+Runs every five minutes generating 288 API calls per sensor per day. Switchbot limits API calls to 10,000 per day. So, this limits the number of devices to 34 (excluding IR devices.) See the [SwitchbotAPI API]([url](https://github.com/OpenWonderLabs/SwitchBotAPI#get-device-status)) for the data returned from a status call.
+
+Parameters: ***None***
+
 
 ## Work in Progress
 The script works fine, but everything is still WIP, including this file.
 For any problems open an Issue, (soon I will insert a template for that).
 
 ## Changelog
+### <Release date> v? (🟢 New Features)
+**Add support for non-IR devices** : Bot, Contact Sensor, Curtain and Meter.
+
+**Add service 'Switchbot Curtains Command'** : Send command to Curtain device.
+
+**Add time trigger to get the status of Bots, Contact Sensors, Curtains and Meters every 5 minutes.** This will show in the Logbook even if you only have IR devices. However, the API calls will only be made for non-IR devices.
+
+**Add time trigger to run 'Refresh Devices' at startup.**
+
+
 ### 2023.02.19 v0.2.1 (🛠️ Some Fixes)
 
 **Fixed ([#15][i15]) `commandType` parameters in `Generic Command`**.<br>
 *Suggest updating if you need to control custom remotes created in the mobile app*.
 
 
-
 ### 2023.01.16 v0.2.0 (🟢 New Features and 🛠️ Some Fixes)
 **Add service `SwitchBot IR Light Control`**:<br>
  Send command via infrared to light device.
+
 
 **Corrected some descriptions**.
 
