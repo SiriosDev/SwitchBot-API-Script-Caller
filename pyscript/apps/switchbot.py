@@ -146,7 +146,7 @@ def get_status(headers, device_id):
 def switchbot_refresh_devices():
     """yaml
 name: SwitchBot refresh devices
-description: This service list registered devices in the "Switchbot Hubs". Devices are saved as "switch.switchbot_remote_<deviceName>" or similar in Home Assistant.
+description: This service lists registered devices in the "Switchbot Hub". Devices are saved as "switch.switchbot_remote_<deviceName>" or similar in Home Assistant.
 fields:
       """
     headers_dict=auth(**pyscript.app_config)
@@ -410,7 +410,7 @@ fields:
         mode: list
   repetition:
     name: Repetition
-    description: Number of Repetition (required for "press" command) ("1" by Default)
+    description: Number of repetitions (required for "press" command) ("1" by Default)
     example: 1
     default: 1
     required: false
@@ -505,7 +505,7 @@ fields:
 
   commandType:
     name: Command Type
-    description: For customized buttons, this needs to be set to customzie
+    description: For customized buttons, this needs to be set to customize
     example: command
     default: command
     required: true
