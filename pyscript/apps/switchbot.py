@@ -1,6 +1,8 @@
 import time, hashlib, hmac, base64, requests
 import re, yaml, io
 
+TTD = {'Curtain': 'cover', 'Contact Sensor': 'binary_sensor', 'Meter':'sensor', 'MeterPlus':'sensor', "Air Conditioner": "climate", 'Light': 'light', 'Bot': 'switch'}
+ICONS = {'Projector': 'projector', 'Light': 'lightbulb-on', 'TV':'television', 'Fan':'fan', 'Air Conditioner': 'air-conditioner', 'Curtain': 'curtains', 'Contact Sensor': 'leak', 'Meter': 'thermometer', 'MeterPlus': 'thermometer'}
 PREFIX="switchbot_remote_"
 KEY_DEV_TYPE='remoteType'
 KEY_DEV_NAME='deviceName'
@@ -29,7 +31,7 @@ def auth(token=None, secret=None, nonce=None):
 def gen_icon(dev):
   '''Generate icon based on device type. Default to a remote icon.'''
   ico = 'remote'
-  icons = {'Projector': 'projector', 'Light': 'lightbulb-on', 'TV':'television', 'Fan':'fan', 'Air Conditioner': 'air-conditioner', 'Curtain': 'curtains', 'Contact Sensor': 'leak', 'Meter': 'thermometer', 'MeterPlus': 'thermometer'}
+  icons = ICONS
   typ = dev.get(KEY_DEV_TYPE, None)
   if typ == None:
     typ = dev.get(KEY_NON_IR_TYPE)
@@ -63,7 +65,6 @@ def gen_dev_uid(dev:dict):
 
 
 def type_to_domain(type):
-  TTD = {'Curtain': 'cover', 'Contact Sensor': 'binary_sensor', 'Meter':'sensor', 'MeterPlus':'sensor', "Air Conditioner": "climate", 'Light': 'ligth'}
   if type in TTD:
     return TTD[type]
   elif type == None:
@@ -107,7 +108,6 @@ def create_non_ir_entities(devices):
       non_ir['friendly_name'] = gen_dev_name(non_ir)
       non_ir['icon'] = gen_icon(non_ir)
       state.set(f'{gen_dev_uid(non_ir)}', value=non_ir.get(KEY_DEV_ID), new_attributes=non_ir)
-  switchbot_get_status() # Get an initial status for sensor-like devices.
 
 
 @pyscript_executor
@@ -133,7 +133,7 @@ def get_status(headers, device_id):
   data = r.json()
   status = data['statusCode']
   if status == 100:
-    return data
+    return data['body']
   elif status == "n/a":
     log.warning(f"Status request for {device_id} unauthorized. Http 401 Error. User permission is denied due to invalid token.")
   elif status == 190:
@@ -160,6 +160,7 @@ fields:
     clear_existing()
     create_ir_entities(infrared)
     create_non_ir_entities(non_infrared)
+    switchbot_get_status() # Get an initial status for sensor-like devices.
 
 @service
 def switchbot_ir_hvac(device=None, temperature=None, mode=None, fan_speed=None, state=None):
@@ -170,12 +171,12 @@ fields:
   device:
     name: Device
     description: Target device
-    example: switch.switchbot_remote_hvac
+    example: climate.switchbot_remote_hvac
     default:
     required: true
     selector:
       entity:
-        domain: switch
+        domain: climate
 
   state:
     name: Power State
@@ -261,7 +262,7 @@ fields:
     required: true
     selector:
       entity:
-        domain: switch
+        domain: light
   command:
     name: Command
     description: Select a Command
@@ -442,7 +443,6 @@ fields:
     required: true
     selector:
       entity:
-        domain: switch
     """
     deviceId = extract_device_id(device)
     headers_dict = auth(**pyscript.app_config)
@@ -462,7 +462,6 @@ fields:
     required: true
     selector:
       entity:
-        domain: switch
     """
     deviceId = extract_device_id(device)
     headers_dict=auth(**pyscript.app_config)
@@ -483,7 +482,6 @@ fields:
     required: true
     selector:
       entity:
-        domain: switch
 
   command:
     name: Command
@@ -532,7 +530,7 @@ def switchbot_get_status():
         headers_dict = auth(**pyscript.app_config)
         data = get_status(headers_dict, deviceId)
         temp = state.getattr(s)
-        data['body']['friendly_name'] = temp['friendly_name']
-        data['body']['icon'] = temp['icon']
+        data['friendly_name'] = temp['friendly_name']
+        data['icon'] = temp['icon']
         if data != None:
-          state.set(s, value=deviceId, new_attributes=data['body'])
+          state.set(s, value=deviceId, new_attributes=data)
