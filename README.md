@@ -121,7 +121,8 @@ _Creates Home Assistant entity with the best type-domain association, otherwise 
 _The `<device_name>` corresponds to the name of the device in the SwitchBot app._  
 _If `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>` (e.g. `switch.switchbot_remote_light_0D62`)_  
 _The `<deviceId>` is an internal unique code._  
-_The entities can then be used for sending commands or getting status using other functions of this pyscript. ⚠️ Not working stand alone ⚠️_
+***⚠️The entities can then be used for sending commands or getting status using other functions of this pyscript.⚠️*** </br>
+***⚠️ Not working stand alone ⚠️***</br>
 _If this service does not find all the devices it had previously found, it will alert you with a persistent notification in the HA WebUi._
 
 Parameters: ***None***
