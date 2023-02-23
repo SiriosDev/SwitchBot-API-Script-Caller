@@ -11,11 +11,11 @@ KEY_DEV_TYPE='deviceType'
 KEY_CLOUD='enableCloudService'
 
 # "input" from config
-def auth(token=None, secret=None, nonce=None):
-
-    token=str(token)
-    secret=str(secret)
-    nonce=str(nonce)
+def auth(conf_dict=None):
+    
+    token=str(conf_dict['token'])
+    secret=str(conf_dict['secret'])
+    nonce=str(conf_dict['nonce'])
     
     t = int(round(time.time() * 1000))
     string_to_sign = '{}{}{}'.format(token, t, nonce)
@@ -153,7 +153,7 @@ def h_switchbot_get_status(devices=None):
       if (PREFIX in s):
         if KEY_DEV_TYPE in state.getattr(s).keys():
           deviceId = extract_device_id(s)
-          headers_dict = auth(**pyscript.app_config)
+          headers_dict = auth(pyscript.app_config)
           data = get_status(headers_dict, deviceId)
           temp = state.getattr(s)
           data['friendly_name'] = temp['friendly_name']
@@ -165,7 +165,7 @@ def h_switchbot_get_status(devices=None):
       if (PREFIX in s):
         if KEY_DEV_TYPE in state.getattr(s).keys():
           deviceId = extract_device_id(s)
-          headers_dict = auth(**pyscript.app_config)
+          headers_dict = auth(pyscript.app_config)
           data = get_status(headers_dict, deviceId)
           temp = state.getattr(s)
           data['friendly_name'] = temp['friendly_name']
@@ -180,11 +180,11 @@ def h_switchbot_get_status(devices=None):
 @time_trigger("startup")
 def switchbot_refresh_devices():
     """yaml
-name: SwitchBot refresh devices
-description: This service lists registered devices in the "Switchbot Hub". Devices are saved as "switch.switchbot_remote_<deviceName>" or similar in Home Assistant.
-fields:
-      """
-    headers_dict=auth(**pyscript.app_config)
+name: SwitchBot Refresh Devices
+description: This service lists the devices registered in all the "Switchbot Hub" connected to your account. The devices are saved as "switch.switchbot_remote_<device_name>" or similar in Home Assistant. (this service consume 1 API call *executions)
+fields:  
+    """
+    headers_dict=auth(pyscript.app_config)
     url=f"https://api.switch-bot.com/v1.1/devices"
     r = requestGetHelper(url, {}, headers_dict)
     log.info(str(r.json()))
@@ -201,18 +201,17 @@ fields:
 @service
 def switchbot_get_status():
     """yaml
-name: SwitchBot get status
-description: This service sets as attributes all values related to all devices, eg. a meter will have temperature and humidity values.
+name: SwitchBot Get Status
+description: This service updates the attributes of all (compatible) devices, e.g., an entity associated with a meter will receive temperature and humidity values, etc. (this service consume 1 API call *number_of_devices*execution)
 fields:
-      """
+    """
     h_switchbot_get_status() # Get an initial status for sensor-like devices.
     
 @service
 def switchbot_get_single_status(devices=None):
-
     """yaml
-name: SwitchBot Turn Device ON
-description: Turn Switchbot controlled device ON
+name: SwitchBot Get Specific Status
+description: This service updates the attributes of selected devices, e.g. an entity associated with a meter will receive temperature and humidity values, etc. It's advisable to use this service instead of "switchbot_get_status" if you need to update only a few devices, in order make less API calls (this service consume 1 API call *number_of_devices*execution)
 fields:
   devices:
     name: Devices
@@ -230,7 +229,7 @@ fields:
 def switchbot_ir_hvac(device=None, temperature=None, mode=None, fan_speed=None, state=None):
     """yaml
 name: SwitchBot IR HVAC Control
-description: Control IR HVAC connected to your SwitchBot account.
+description: Control IR HVAC connected to your SwitchBot account. (this service consume 1 API call *execution)
 fields:
   device:
     name: Device
@@ -272,8 +271,8 @@ fields:
   mode:
     name: Mode
     description: Select a mode (required for "on" state) ("Auto" by Default)
-    example: Auto
-    default: Auto
+    example: Heat
+    default: Cool
     required: false
     selector:
       select:
@@ -299,13 +298,13 @@ fields:
           - Medium
           - High
         mode: list
-      """
+    """
     deviceId = extract_device_id(device)
-    headers_dict = auth(**pyscript.app_config)
+    headers_dict = auth(pyscript.app_config)
     if temperature == None or state == "off":
       temperature = 26
     if mode == None or state == "off":
-      mode = "Auto"
+      mode = "Cool"
     if fan_speed == None or state == "off":
       fan_speed = "Auto"
     modes={"Auto": "1","Cool": "2","Dry": "3","Fan": "4","Heat": "5"}
@@ -316,7 +315,7 @@ fields:
 def switchbot_ir_light(device=None, command=None, steps=None):
     """yaml
 name: SwitchBot IR Light Control
-description: Control IR Light connected to your SwitchBot account.
+description: Control IR Light connected to your SwitchBot account. (this service consume 1 API call *steps*execution or 1 *executon(turnON or turnOFF))
 fields:
   device:
     name: Device
@@ -354,7 +353,7 @@ fields:
         mode: box
     """
     deviceId = extract_device_id(device)
-    headers = auth(**pyscript.app_config)
+    headers = auth(pyscript.app_config)
     if steps == None or command == "turnOn" or command== "turnOff":
       steps=1
     for i in range(steps):
@@ -365,7 +364,7 @@ fields:
 def switchbot_curtain(device=None, command=None, index=None, mode=None, position=None):
     """yaml
 name: SwitchBot Curtain Control
-description: Control Switchbot Curtain connected to your SwitchBot account.
+description: Control Switchbot Curtain connected to your SwitchBot account. (this service consume 1 API call *execution)
 fields:
   device:
     name: Device
@@ -434,7 +433,7 @@ fields:
     """
     
     deviceId = extract_device_id(device)
-    headers_dict = auth(**pyscript.app_config)
+    headers_dict = auth(pyscript.app_config)
     modes={"Performance": "0", "Silent": "1", "Default": "ff"}
     if position == None:
       position = "50"
@@ -449,7 +448,7 @@ fields:
 def switchbot_bot(device=None, command=None, repetition=None):
     """yaml
 name: SwitchBot Bot Control
-description: Control Switchbot Bot connected to your SwitchBot account.
+description: Control Switchbot Bot connected to your SwitchBot account. (this service consume 1 API call *repetion*execution or 1 *executon(turnON or turnOFF))
 fields:
   device:
     name: Device
@@ -486,7 +485,7 @@ fields:
         mode: box
     """
     deviceId = extract_device_id(device)
-    headers_dict=auth(**pyscript.app_config)
+    headers_dict=auth(pyscript.app_config)
     if repetition == None or not (command == "press"):
       repetition = 1
     for i in range(repetition): 
@@ -494,10 +493,9 @@ fields:
 
 @service
 def switchbot_turn_on(device=None):
-
     """yaml
 name: SwitchBot Turn Device ON
-description: Turn Switchbot controlled device ON
+description: Turn Switchbot controlled device ON (this service consume 1 API call *execution)
 fields:
   device:
     name: Device
@@ -509,14 +507,14 @@ fields:
       entity:
     """
     deviceId = extract_device_id(device)
-    headers_dict = auth(**pyscript.app_config)
+    headers_dict = auth(pyscript.app_config)
     command_execute(headers_dict, deviceId, "turnOn")
 
 @service
 def switchbot_turn_off(device=None):
     """yaml
 name: SwitchBot Turn Device OFF
-description: Turn Switchbot controlled device OFF
+description: Turn Switchbot controlled device OFF (this service consume 1 API call *execution)
 fields:
   device:
     name: Device
@@ -528,7 +526,7 @@ fields:
       entity:
     """
     deviceId = extract_device_id(device)
-    headers_dict=auth(**pyscript.app_config)
+    headers_dict=auth(pyscript.app_config)
     command_execute(headers_dict, deviceId, "turnOff")
 
 
@@ -536,7 +534,7 @@ fields:
 def switchbot_generic_command(device=None, command=None, parameter=None, commandType=None):
     """yaml
 name: SwitchBot Generic Command
-description: Control Switchbot Device through custom command(refer to https://github.com/OpenWonderLabs/SwitchBotAPI)
+description: Control Switchbot Device through custom command() (this service consume 1 API call *execution)
 fields:
   device:
     name: Device
@@ -576,8 +574,7 @@ fields:
         options:
           - command
           - customize
-
-      """
+    """
     deviceId = extract_device_id(device)
-    headers_dict = auth(**pyscript.app_config)
+    headers_dict = auth(pyscript.app_config)
     command_execute(headers_dict, deviceId, command, parameter=parameter, custom=(commandType=='customize'))
