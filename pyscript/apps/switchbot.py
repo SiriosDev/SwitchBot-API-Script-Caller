@@ -4,11 +4,11 @@ import re, yaml, io
 TTD = {'Curtain': 'cover', 'Contact Sensor': 'binary_sensor', 'Meter':'sensor', 'MeterPlus':'sensor', "Air Conditioner": "climate", 'Light': 'light', 'Bot': 'switch'}
 ICONS = {'Projector': 'projector', 'Light': 'lightbulb-on', 'TV':'television', 'Fan':'fan', 'Air Conditioner': 'air-conditioner', 'Curtain': 'curtains', 'Contact Sensor': 'leak', 'Meter': 'thermometer', 'MeterPlus': 'thermometer'}
 PREFIX="switchbot_remote_"
-KEY_DEV_TYPE='remoteType'
 KEY_DEV_NAME='deviceName'
 KEY_DEV_ID='deviceId'
-KEY_NON_IR_TYPE='deviceType'
-KEY_NON_IR_CLOUD='enableCloudService'
+KEY_DEV_IR_TYPE='remoteType'
+KEY_DEV_TYPE='deviceType'
+KEY_CLOUD='enableCloudService'
 
 # "input" from config
 def auth(token=None, secret=None, nonce=None):
@@ -32,15 +32,13 @@ def gen_icon(dev):
   '''Generate icon based on device type. Default to a remote icon.'''
   ico = 'remote'
   icons = ICONS
-  typ = dev.get(KEY_DEV_TYPE, None)
+  typ = dev.get(KEY_DEV_IR_TYPE, None)
   if typ == None:
-    typ = dev.get(KEY_NON_IR_TYPE)
+    typ = dev.get(KEY_DEV_TYPE)
     
   if typ in icons:
     ico = icons[typ]
   return 'mdi:'+ico
-
-
 
 def clear_existing():
   '''Clear switchbot devices which were saved to avoid zombies.'''
@@ -53,16 +51,15 @@ def clear_existing():
 def gen_dev_uid(dev:dict):
   '''Generate a Unique ID for Switchbot IR devices. (devices must have unique names in switchbot app so it works)'''
   name = dev.get(KEY_DEV_NAME)
-  domain = type_to_domain(dev.get(KEY_DEV_TYPE))
+  domain = type_to_domain(dev.get(KEY_DEV_IR_TYPE))
   if domain == None:
-    domain = type_to_domain(dev.get(KEY_NON_IR_TYPE))
+    domain = type_to_domain(dev.get(KEY_DEV_TYPE))
   if name is not None:
     name = name.lower()
     name = re.sub(r'[^0-9a-z]+', '_', name)
     if name not in ['_', '']:
       return domain + '.' + PREFIX + name
-  return domain + '.' + PREFIX + re.sub(r'[^0-9a-z]+', '_', str(dev.get(KEY_DEV_TYPE)).lower())+'_'+str(dev.get(KEY_DEV_ID)[-4:])
-
+  return domain + '.' + PREFIX + re.sub(r'[^0-9a-z]+', '_', str(dev.get(KEY_DEV_IR_TYPE)).lower())+'_'+str(dev.get(KEY_DEV_ID)[-4:])
 
 def type_to_domain(type):
   if type in TTD:
@@ -76,7 +73,7 @@ def gen_dev_name(dev):
   name = ['Switchbot']
   if (dev.get(KEY_DEV_NAME) is not None):
     name.append(dev.get(KEY_DEV_NAME))
-  #name.append(f"[IR {dev.get(KEY_DEV_TYPE)}]")
+  #name.append(f"[IR {dev.get(KEY_DEV_IR_TYPE)}]")
   return ' '.join(name)
 
 def extract_device_id(device, _recursived=0):
@@ -96,15 +93,15 @@ def extract_device_id(device, _recursived=0):
 
 def create_ir_entities(devices):
   for dev in devices:
-    log.warning(f"Adding Switchbot Device {dev.get(KEY_DEV_NAME)} [{dev.get(KEY_DEV_TYPE)}] -> {dev.get(KEY_DEV_ID)}")
+    log.warning(f"Adding Switchbot Device {dev.get(KEY_DEV_NAME)} [{dev.get(KEY_DEV_IR_TYPE)}] -> {dev.get(KEY_DEV_ID)}")
     dev['friendly_name'] = gen_dev_name(dev)
     dev['icon'] = gen_icon(dev)
     state.set(f'{gen_dev_uid(dev)}', value=dev.get(KEY_DEV_ID), new_attributes=dev)
 
 def create_non_ir_entities(devices):
   for non_ir in devices:
-    if non_ir.get(KEY_NON_IR_CLOUD): # Only load devices that are cloud-connected.
-      log.warning(f"Adding Switchbot Device {non_ir.get(KEY_DEV_NAME)} [{non_ir.get(KEY_NON_IR_TYPE)}] -> {non_ir.get(KEY_DEV_ID)}")
+    if non_ir.get(KEY_CLOUD): # Only load devices that are cloud-connected.
+      log.warning(f"Adding Switchbot Device {non_ir.get(KEY_DEV_NAME)} [{non_ir.get(KEY_DEV_TYPE)}] -> {non_ir.get(KEY_DEV_ID)}")
       non_ir['friendly_name'] = gen_dev_name(non_ir)
       non_ir['icon'] = gen_icon(non_ir)
       state.set(f'{gen_dev_uid(non_ir)}', value=non_ir.get(KEY_DEV_ID), new_attributes=non_ir)
@@ -117,6 +114,7 @@ def requestHelper(_url,_json,_headers):
 @pyscript_executor
 def requestGetHelper(_url,_json,_headers):
     return requests.get(_url,json = _json, headers=_headers)
+  
 
 def command_execute(headers, device_id, command, parameter=None, custom=False):
     url=f"https://api.switch-bot.com/v1.1/devices/{device_id}/commands"
@@ -126,6 +124,7 @@ def command_execute(headers, device_id, command, parameter=None, custom=False):
     if custom:
       data["commandType"] = 'customize'
     requestHelper(url, data, headers)
+    
 
 def get_status(headers, device_id):
   url=f"https://api.switch-bot.com/v1.1/devices/{device_id}/status"
@@ -139,6 +138,42 @@ def get_status(headers, device_id):
   elif status == 190:
     log.warning(f"Status request for {device_id}. System error. Device internal error due to device states not synchronized with server.")
   return None
+
+
+
+
+
+# Status checking
+# Status requests got every 5 minutes (288 API calls / device / day).
+#@time_trigger("period(0:00, 300 sec)")
+def h_switchbot_get_status(devices=None):
+  if devices == None:
+    states = state.names()
+    for s in states:
+      if (PREFIX in s):
+        if KEY_DEV_TYPE in state.getattr(s).keys():
+          deviceId = extract_device_id(s)
+          headers_dict = auth(**pyscript.app_config)
+          data = get_status(headers_dict, deviceId)
+          temp = state.getattr(s)
+          data['friendly_name'] = temp['friendly_name']
+          data['icon'] = temp['icon']
+          if data != None:
+            state.set(s, value=deviceId, new_attributes=data)
+  else:
+    for s in devices:
+      if (PREFIX in s):
+        if KEY_DEV_TYPE in state.getattr(s).keys():
+          deviceId = extract_device_id(s)
+          headers_dict = auth(**pyscript.app_config)
+          data = get_status(headers_dict, deviceId)
+          temp = state.getattr(s)
+          data['friendly_name'] = temp['friendly_name']
+          data['icon'] = temp['icon']
+          if data != None:
+            state.set(s, value=deviceId, new_attributes=data)
+        
+        
 
 #services
 @service
@@ -160,7 +195,36 @@ fields:
     clear_existing()
     create_ir_entities(infrared)
     create_non_ir_entities(non_infrared)
-    switchbot_get_status() # Get an initial status for sensor-like devices.
+    h_switchbot_get_status() # Get an initial status for sensor-like devices.
+    
+
+@service
+def switchbot_get_status():
+    """yaml
+name: SwitchBot get status
+description: This service sets as attributes all values related to all devices, eg. a meter will have temperature and humidity values.
+fields:
+      """
+    h_switchbot_get_status() # Get an initial status for sensor-like devices.
+    
+@service
+def switchbot_get_single_status(devices=None):
+
+    """yaml
+name: SwitchBot Turn Device ON
+description: Turn Switchbot controlled device ON
+fields:
+  devices:
+    name: Devices
+    description: Target device
+    example: switch.switchbot_remote_light
+    default:
+    required: true
+    selector:
+      entity:
+        multiple: true
+    """
+    h_switchbot_get_status(devices) # Get an initial status for sensor-like devices.
 
 @service
 def switchbot_ir_hvac(device=None, temperature=None, mode=None, fan_speed=None, state=None):
@@ -517,20 +581,3 @@ fields:
     deviceId = extract_device_id(device)
     headers_dict = auth(**pyscript.app_config)
     command_execute(headers_dict, deviceId, command, parameter=parameter, custom=(commandType=='customize'))
-
-# Status checking
-# Status requests got every 5 minutes (288 API calls / device / day).
-#@time_trigger("period(0:00, 300 sec)")
-def switchbot_get_status():
-  states = state.names()
-  for s in states:
-    if (PREFIX in s):
-      if KEY_NON_IR_TYPE in state.getattr(s).keys():
-        deviceId = extract_device_id(s)
-        headers_dict = auth(**pyscript.app_config)
-        data = get_status(headers_dict, deviceId)
-        temp = state.getattr(s)
-        data['friendly_name'] = temp['friendly_name']
-        data['icon'] = temp['icon']
-        if data != None:
-          state.set(s, value=deviceId, new_attributes=data)
