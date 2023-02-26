@@ -1,5 +1,11 @@
-import time, hashlib, hmac, base64, requests
-import re, yaml, io
+from time import time
+from hashlib import sha256
+from hmac import new
+from base64 import b64encode
+from requests import post, get
+from re import sub
+
+import yaml, io
 
 TTD = {'Curtain': 'cover', 'Contact Sensor': 'binary_sensor', 'Meter':'sensor', 'MeterPlus':'sensor', "Air Conditioner": "climate", 'Light': 'light', 'Bot': 'switch'}
 ICONS = {'Projector': 'projector', 'Light': 'lightbulb-on', 'TV':'television', 'Fan':'fan', 'Air Conditioner': 'air-conditioner', 'Curtain': 'curtains', 'Contact Sensor': 'leak', 'Meter': 'thermometer', 'MeterPlus': 'thermometer'}
@@ -17,13 +23,13 @@ def auth(conf_dict=None):
     secret=str(conf_dict['secret'])
     nonce=str(conf_dict['nonce'])
     
-    t = int(round(time.time() * 1000))
+    t = int(round(time() * 1000))
     string_to_sign = '{}{}{}'.format(token, t, nonce)
 
     string_to_sign = bytes(string_to_sign, 'utf-8')
     secret = bytes(secret, 'utf-8')
 
-    sign = base64.b64encode(hmac.new(secret, msg=string_to_sign, digestmod=hashlib.sha256).digest())
+    sign = b64encode(new(secret, msg=string_to_sign, digestmod=sha256).digest())
 
     h={"Authorization": (str(token)), "t": (str(t)), "sign": (str(sign, 'utf-8')), "nonce": (str(nonce)), "Content-Type": "application/json; charset=utf8"}
     return h
@@ -56,10 +62,10 @@ def gen_dev_uid(dev:dict):
     domain = type_to_domain(dev.get(KEY_DEV_TYPE))
   if name is not None:
     name = name.lower()
-    name = re.sub(r'[^0-9a-z]+', '_', name)
+    name = sub(r'[^0-9a-z]+', '_', name)
     if name not in ['_', '']:
       return domain + '.' + PREFIX + name
-  return domain + '.' + PREFIX + re.sub(r'[^0-9a-z]+', '_', str(dev.get(KEY_DEV_IR_TYPE)).lower())+'_'+str(dev.get(KEY_DEV_ID)[-4:])
+  return domain + '.' + PREFIX + sub(r'[^0-9a-z]+', '_', str(dev.get(KEY_DEV_IR_TYPE)).lower())+'_'+str(dev.get(KEY_DEV_ID)[-4:])
 
 def type_to_domain(type):
   if type in TTD:
@@ -109,11 +115,11 @@ def create_non_ir_entities(devices):
 
 @pyscript_executor
 def requestHelper(_url,_json,_headers):
-    x=requests.post(_url,json = _json, headers=_headers)
+    x=post(_url,json = _json, headers=_headers)
 
 @pyscript_executor
 def requestGetHelper(_url,_json,_headers):
-    return requests.get(_url,json = _json, headers=_headers)
+    return get(_url,json = _json, headers=_headers)
   
 
 def command_execute(headers, device_id, command, parameter=None, custom=False):
