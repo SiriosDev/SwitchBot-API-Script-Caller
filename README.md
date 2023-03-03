@@ -1,5 +1,4 @@
 [![License][licensing-shield-this]](LICENSE) <br>
-All rights to the [API][switchbot-api-repo] belong to [OpenWonderLabs][openwonderlabs-lnk].
 
 # SwitchBot API Script Caller (v 0.3)
 
