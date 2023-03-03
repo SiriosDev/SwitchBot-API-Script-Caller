@@ -1,14 +1,12 @@
-[![License][licensing-shield]](LICENSE) <br>
+[![License][licensing-shield-this]](LICENSE) <br>
 All rights to the [API][switchbot-api-repo] belong to [OpenWonderLabs][openwonderlabs-lnk].
 
-# SwitchBot API Script Caller (v 0.2.1)
-
-> **Warning** <br>
-> At the moment not all API-compatible models are implemented, if you have the capability do a [fork][fork] and implement it (and request a [PR][pr]), otherwise open an [issue][issues] with "TEST|**_Model_Name_**" in the title
+# SwitchBot API Script Caller (v 0.3)
 
 This (Py)Script allows you to control all (WIP) your SwitchBot devices via API calls (1.1).
 
-‼️‼️At the moment we have implemented all the devices that we can test, so if you want to be a tester please open an [issue][issues] with "test" in the title or if you are also able to develop go ahead and do a [PR][pr]‼️‼️
+> **Warning** <br>
+> At the moment not all API-compatible models are implemented, if you have the capability do a [fork][fork] and implement it (and request a [PR][pr]), otherwise open an [issue][issues] with "TEST|**_Model_Name_**" in the title.
 
 For more info click [here][switchbot-api-repo]
 
@@ -297,7 +295,10 @@ Make sure to run `SwitchBot Refresh Devices` before configuring anything else.
 
 [Full Changelog History here][changelog]
 
-[licensing-shield]: https://img.shields.io/github/license/SiriosDev/SwitchBot-API-Script-Caller?style=flat-square
+[licensing-shield-this]: https://img.shields.io/github/license/SiriosDev/SwitchBot-API-Script-Caller?style=flat-square
+[licensing-shield-ps]: https://img.shields.io/github/license/custom-components/pyscript?style=flat-square
+[licensing-shield-sbapi]: https://img.shields.io/github/license/OpenWonderLabs/SwitchBotAPI?style=flat-square
+[licensing-shield-hass]: https://img.shields.io/github/license/home-assistant/core?style=flat-square
 [hacs-docs]: https://hacs.xyz/docs/setup/prerequisites
 [pyscript-docs]: https://hacs-pyscript.readthedocs.io/en/latest/installation.html
 [switchbot-api-repo]: https://github.com/OpenWonderLabs/SwitchBotAPI
@@ -310,3 +311,19 @@ Make sure to run `SwitchBot Refresh Devices` before configuring anything else.
 [changelog]: CHANGELOG.md
 [i15]: https://github.com/SiriosDev/SwitchBot-API-Script-Caller/issues/15
 [unnum]: #20230114-v010-%EF%B8%8F-breaking-changes
+
+---
+
+**SwitchBot API Script Caller** is an unofficial, community-driven script NOT affiliated, endorsed or supported by **Wonderlabs, Inc.** Some images used in this app are copyrighted and are supported under fair use. **SwitchBot** and **SwitchBot model names** are trademarks of **Wonderlabs**. No copyright infringement intended. <br>
+**© SwitchBot Global.** <br>
+**© Wonderlabs.**
+
+---
+
+PyScript is distributed under [![License][licensing-shield-ps]](https://github.com/custom-components/pyscript)license.<br>
+The APIs are distributed under [![License][licensing-shield-sbapi]][switchbot-api-repo]  license.<br>
+HomeAssistant is distributed under [![License][licensing-shield-hass]](https://github.com/home-assistant/core) license.<br>
+
+***The License at the top of this document refers only to the code in this repository***
+
+---
