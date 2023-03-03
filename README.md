@@ -2,8 +2,11 @@
 All rights to the [API][switchbot-api-repo] belong to [OpenWonderLabs][OpenWonderLabs-lnk].
 
 # SwitchBot API Script Caller (v 0.2.1)
+> **Note**
+> This is a note
+
 > **Warning**
-> sometih
+> This is a warning
 
 This (Py)Script allows you to control all (WIP) your SwitchBot devices via API calls (1.1).
 
