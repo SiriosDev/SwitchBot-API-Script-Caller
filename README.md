@@ -5,7 +5,7 @@
 This (Py)Script allows you to control all (WIP) your SwitchBot devices via API calls (1.1).
 
 > **Warning** <br>
-> At the moment not all API-compatible models are implemented, if you have the capability do a [fork][fork] and implement it (and request a [PR][pr]), otherwise open an [issue][issues] with "TEST|**_Model_Name_**" in the title.
+> **At the moment not all API-compatible models are implemented, if you have the capability do a [fork][fork] and implement it (and request a [PR][pr]), otherwise open an [issue][issues] with "TEST|`Model_Name`" in the title.**
 
 For more info click [here][switchbot-api-repo]
 
@@ -30,16 +30,6 @@ For more info click [here][switchbot-api-repo]
   - PyScript Integration ([docs][pyscript-docs])
 
 ## Installation
-
-⚠️ **If you update from one of the following versions there have been breaking changes:**
-
-<details>
-<summary>Versions</summary>
-
-- [Unnumbered (2023.01.14)][unnum]
-
-</details>
-
 ### Procedure
 
 1. **Clone this repository in your config folder**
@@ -91,8 +81,18 @@ cd SwitchBot-API-Script-Caller
 git pull
 ```
 
-⚠️ **See changelog before updating.**  
-The project is still under development, and breaking changes may **frequently** occur.
+> **Warning** <br>
+
+The project is still under development, and breaking changes may **frequently** occur. <br>
+**If you update from one of the following versions there have been breaking changes:**
+
+<details>
+<summary>Versions</summary>
+
+- [Unnumbered (2023.01.14)][unnum]
+
+</details>
+
 
 ### Installation Notes
 
@@ -132,8 +132,13 @@ _Creates Home Assistant entity with the best type-domain association, otherwise 
 _The `<device_name>` corresponds to the name of the device in the SwitchBot app._  
 _If `<device_name>` doesn't contains Alphanum characters (e.g is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>`(e.g.`switch.switchbot*remote_light_0D62`)*  
 _The `<deviceId>` is an internal unique code._  
-**_⚠️The entities can then be used for sending commands or getting status using other functions of this pyscript.⚠️_** </br>
-**_⚠️ Not working stand alone ⚠️_**</br>
+
+> **Warning** <br>
+> **_The entities can then be used for sending commands or getting status using other functions of this pyscript._** </br>
+
+> **Warning** <br>
+> **_Not working stand alone_**</br>
+
 _If this service does not find all the devices it had previously found, it will alert you with a persistent notification in the HA WebUi._
 
 Parameters: **_None_**
