@@ -81,7 +81,7 @@ cd SwitchBot-API-Script-Caller
 git pull
 ```
 
-> **Warning** <br>
+**Warning** <br>
 
 The project is still under development, and breaking changes may **frequently** occur. <br>
 **If you update from one of the following versions there have been breaking changes:**
