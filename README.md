@@ -130,9 +130,6 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command)
 
 ### 🔸SwitchBot Refresh Devices
-```
-pyscript.switchbot_refresh_devices
-```
 
 _Create Home Assistant entity with the best `type`-`domain` association, otherwise with domain `switch`. <br>
 These devices are stored as `<entity_type>.switchbot_remote_<device_name>`. <br>
@@ -150,7 +147,13 @@ _If `<device_name>` doesn't contains Alphanum characters (e.g. is written in ano
 
 _If this service does not find all the devices it had previously found, it will alert you with a persistent notification in the HA WebUi._
 
-Parameters: **_None_**
+#### Example
+```yaml
+service: pyscript.switchbot_refresh_devices
+```
+#### Service Data
+**_None_**
+
 
 ### 🔸Switchbot Get Status
 ```
