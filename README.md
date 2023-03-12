@@ -1,4 +1,4 @@
-[![License][licensing-shield-this]](LICENSE) <br>
+[![License][licensing-shield-this]](LICENSE) ![Maintenance][maintenance-shield] ![Activity][comActivity-shield] [![Donation][donation-shield]](https://ko-fi.com/siriosdev)<br>
 
 # SwitchBot API Script Caller (v 0.3)
 
@@ -336,6 +336,9 @@ Make sure to run `SwitchBot Refresh Devices` before configuring anything else.
 [Full Changelog History here][changelog]
 
 [licensing-shield-this]: https://img.shields.io/github/license/SiriosDev/SwitchBot-API-Script-Caller?style=flat-square
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2023?style=flat-square
+[comActivity-shield]: https://img.shields.io/github/commit-activity/m/SiriosDev/SwitchBot-API-Script-Caller?style=flat-square
+[donation-shield]: https://img.shields.io/badge/Buy%20Me%20A%20Ko--Fi-Donate-magenta
 [licensing-shield-ps]: https://img.shields.io/github/license/custom-components/pyscript?style=flat-square
 [licensing-shield-sbapi]: https://img.shields.io/github/license/OpenWonderLabs/SwitchBotAPI?style=flat-square
 [licensing-shield-hass]: https://img.shields.io/github/license/home-assistant/core?style=flat-square
