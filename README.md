@@ -129,16 +129,24 @@ It is important to execute [`SwitchBot Refresh Devices`](#switchbot-refresh-devi
 - [SwitchBot IR Light Control (`pyscript.switchbot_ir_light_control`)](#switchbot-ir-light-control)
 - [SwitchBot Generic Command (`pyscript.switchbot_generic_command`)](#switchbot-generic-command)
 
-### 🔸SwitchBot Refresh Devices
+### SwitchBot Refresh Devices
 
-_Create Home Assistant entity with the best `type`-`domain` association, otherwise with domain `switch`. <br>
-These devices are stored as `<entity_type>.switchbot_remote_<device_name>`. <br>
-e.g. A SwitchBot Curtain™ will become`cover.switchbot_remote_bedroom_curtains`_
+> **Warning** <br>
+> (API call consumed: 1*execution)
 
-_The `<device_name>` corresponds to the name of the device in the SwitchBot app._  
-_If `<device_name>` doesn't contains Alphanum characters (e.g. is written in another alphabet), it is replaced by `<deviceType>_<deviceId[-4:]>`(e.g. `switch.switchbot_remote_light_0D62`)_
+**This service lists all the devices registered in your Switchbot Hubs™ connected to your account.**
+
+The new entities will have a type corresponding to that of the switchbot app, following the best `type`-`domain` association, in case of mismatch will be assigned to the domain `switch`.
 
 > **Note** <br>
+> _These devices are stored as `<entity_domain>.switchbot_remote_<device_name>`._ <br>
+> _e.g. A SwitchBot Curtain™ will become `cover.switchbot_remote_bedroom_curtains`_.
+
+
+
+> **Note** <br>
+> _The `<device_name>` corresponds to the name of the device in the SwitchBot app, (with `_` instead of ` `)._  
+> _If it does not contains Alphanum characters, it is replaced by `<deviceType>_<deviceId[-4:]>` <br> (e.g. `switch.switchbot_remote_light_0D62`)_
 > _The `<deviceId>` is an internal unique code._  
 
 > **Warning** <br>
@@ -155,7 +163,7 @@ service: pyscript.switchbot_refresh_devices
 **_None_**
 
 
-### 🔸Switchbot Get Status
+### Switchbot Get Status
 ```
 pyscript.switchbot_get_status
 ```
@@ -165,7 +173,7 @@ Runs every five minutes generating 288 API calls per sensor per day. Switchbot l
 
 Parameters: **_None_**
 
-### 🔸SwitchBot Turn On
+### SwitchBot Turn On
 ```
 pyscript.switchbot_turn_on
 ```
@@ -177,7 +185,7 @@ Parameters:
 - `device`
   - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 
-### 🔸SwitchBot Turn Off
+### SwitchBot Turn Off
 ```
 pyscript.switchbot_turn_off
 ```
@@ -189,7 +197,7 @@ Parameters:
 - `device`
   - See [`SwitchBot Refresh Devices`](#switchbot-refresh-devices).
 
-### 🔸SwitchBot Bot Control
+### SwitchBot Bot Control
 ```
 pyscript.switchbot_bot_command
 ```
@@ -205,7 +213,7 @@ _Interface for "Classic" Bot (turnOn, turnOff, press) devices._
 - `repetition:`
   - int value from `1` to `10`, _only works with `press`_, iterates the command as many times as selected.
 
-### 🔸Switchbot Curtain Control
+### Switchbot Curtain Control
 ```
 pyscript.switchbot_curtain_command
 ```
@@ -223,7 +231,7 @@ _Interface for Curtain (turnOn, turnOff, setPosition) devices._
 - `position:`
   - int value (in percentage) between `0` and `100` (required for "setPosition" command, otherwise it will be ignored)
 
-### 🔸SwitchBot IR HVAC Control
+### SwitchBot IR HVAC Control
 ```
 pyscript.switchbot_hvac
 ```
@@ -243,7 +251,7 @@ _Interface for infrared HVAC (heating, ventilation and air conditioning) devices
 - `fan_speed:`
   - int value between `Auto`, `Low`, `Medium`, `High`
 
-### 🔸SwitchBot IR Light Control
+### SwitchBot IR Light Control
 ```
 pyscript.switchbot_ir_light_control
 ```
@@ -259,7 +267,7 @@ _Interface for infrared Light (turnOn, turnOff, brightnessUp and brightnessDown)
 - `steps:`
   - int value from `1` to `10`, _only works with `brightnessUp/Down`_, iterates the command as many times as selected.
 
-### 🔸SwitchBot Generic Command
+### SwitchBot Generic Command
 ```
 pyscript.switchbot_generic_command
 ```
