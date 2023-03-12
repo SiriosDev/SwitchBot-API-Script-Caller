@@ -187,7 +187,7 @@ def h_switchbot_get_status(devices=None):
 def switchbot_refresh_devices():
     """yaml
 name: SwitchBot Refresh Devices
-description: "This service lists the devices registered in all the Switchbot Hub™ connected to your account. The devices are saved as 'switch.switchbot_remote_<device_name>' or similar in Home Assistant. (API call consumed: 1*execution)"
+description: "Lists all the devices registered in your  Switchbot Hubs™ connected to your account.  (APIs call consumed: 1*execution)"
 fields:  
     """
     headers_dict=auth(pyscript.app_config)
