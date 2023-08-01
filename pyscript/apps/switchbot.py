@@ -4,6 +4,7 @@ from hmac import new
 from base64 import b64encode
 from requests import post, get
 from re import sub
+from uuid import uuid4
 
 import yaml, io
 
@@ -18,21 +19,29 @@ KEY_CLOUD='enableCloudService'
 
 # "input" from config
 def auth(conf_dict=None):
-    
-    token=str(conf_dict['token'])
-    secret=str(conf_dict['secret'])
-    nonce=str(conf_dict['nonce'])
-    
-    t = int(round(time() * 1000))
-    string_to_sign = '{}{}{}'.format(token, t, nonce)
+  
+  apiHeader={}
+  
+  token=str(conf_dict['token'])
+  secret=str(conf_dict['secret'])
+  
+  nonce=uuid4()
+  
+  t = int(round(time() * 1000))
 
-    string_to_sign = bytes(string_to_sign, 'utf-8')
-    secret = bytes(secret, 'utf-8')
+  string_to_sign = bytes(F"{token}{t}{nonce}", 'utf-8')
+  secret = bytes(secret, 'utf-8')
 
-    sign = b64encode(new(secret, msg=string_to_sign, digestmod=sha256).digest())
-
-    h={"Authorization": (str(token)), "t": (str(t)), "sign": (str(sign, 'utf-8')), "nonce": (str(nonce)), "Content-Type": "application/json; charset=utf8"}
-    return h
+  sign = b64encode(new(secret, msg=string_to_sign, digestmod=sha256).digest())
+  
+  apiHeader['Authorization']=token
+  apiHeader['Content-Type']='application/json'
+  apiHeader['charset']='utf8'
+  apiHeader['t']=str(t)
+  apiHeader['sign']=str(sign, 'utf-8')
+  apiHeader['nonce']=str(nonce)
+  
+  return apiHeader
 
 def gen_icon(dev):
   '''Generate icon based on device type. Default to a remote icon.'''
