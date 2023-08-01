@@ -285,14 +285,15 @@ fields:
 
   mode:
     name: Mode
-    description: Select a mode (required for "on" state) ("Cool" by Default)
-    example: Heat
-    default: Cool
+    description: Select a mode (required for "on" state) ("Fan" by Default) (Use Alt-Auto if Auto not working)
+    example: Fan
+    default: Fan
     required: false
     selector:
       select:
         options:
           - Auto
+          - Alt-Auto
           - Cool
           - Heat
           - Dry
@@ -322,7 +323,7 @@ fields:
       mode = "Cool"
     if fan_speed == None or state == "off":
       fan_speed = "Auto"
-    modes={"Auto": "1","Cool": "2","Dry": "3","Fan": "4","Heat": "5"}
+    modes={"Alt-Auto":"0", "Auto": "1","Cool": "2","Dry": "3","Fan": "4","Heat": "5"}
     speeds={"Auto": "1","Low": "2","Medium": "3","High": "4"}
     command_execute(headers_dict, deviceId, 'setAll', parameter=f"{temperature},{modes[mode]},{speeds[fan_speed]},{state}")
 
