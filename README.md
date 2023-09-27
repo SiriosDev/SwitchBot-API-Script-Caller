@@ -1,6 +1,8 @@
 [![License][licensing-shield]](LICENSE)
 All rights to the [API][switchbot-api-repo] belong to [OpenWonderLabs][OpenWonderLabs-lnk].
 
+# ⚠️⚠️⚠️⚠️ Attention following the creation of the official HomeAssisant integration I have decided that, if it is necessary, I will work to bring any features into the said integration, so unless something new comes along, this repository will soon become discontinued ⚠️⚠️⚠️⚠️
+
 # SwitchBot API Script Caller (v 0.2.1)
 
 This (Py)Script allows you to control all (WIP) your SwitchBot devices via API calls (1.1).
